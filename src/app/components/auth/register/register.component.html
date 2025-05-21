@@ -1,0 +1,12 @@
+<form (submit)="register(); $event.preventDefault()">
+  <label>Login:</label>
+  <input type="login" [(ngModel)]="login" name="login" required />
+
+  <label>Hasło:</label>
+  <input type="password" [(ngModel)]="password" name="password" required />
+
+  <button type="submit">Zarejestruj się</button>
+
+  <div *ngIf="error" style="color: red;">{{ error }}</div>
+  <div *ngIf="success" style="color: green;">{{ success }}</div>
+</form>

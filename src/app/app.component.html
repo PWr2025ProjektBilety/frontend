@@ -1,0 +1,38 @@
+<header class="bg-primary text-white p-3">
+  <div class="container d-flex justify-content-between align-items-center">
+    <h1 class="h4 m-0">
+      <a routerLink="/" class="text-white text-decoration-none">Elektroniczny Bilet Miejski</a>
+    </h1>
+    <nav>
+      <ul class="nav">
+        <li *ngIf="!isLoggedIn" class="nav-item">
+          <a class="nav-link text-white" routerLink="/login">Logowanie</a>
+        </li>
+        <li *ngIf="!isLoggedIn" class="nav-item">
+          <a class="nav-link text-white" routerLink="/register">Rejestracja</a>
+        </li>
+        <li *ngIf="isLoggedIn && currentUser?.role === 'passenger'" class="nav-item">
+          <a class="nav-link text-white" routerLink="/tickets">Moje bilety</a>
+        </li>
+        <li *ngIf="isLoggedIn && currentUser?.role === 'passenger'" class="nav-item">
+          <a class="nav-link text-white" routerLink="/offer">Oferty biletowe</a>
+        </li>
+        <li *ngIf="isLoggedIn && currentUser?.role === 'controller'" class="nav-item">
+          <a class="nav-link text-white" routerLink="/check-ticket">Sprawdź bilet</a>
+        </li>
+
+        <li *ngIf="isLoggedIn" class="nav-item">
+          <a class="nav-link text-white" href="#" (click)="logout()">Wyloguj się</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container my-4">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="bg-light text-center py-3">
+  <p class="mb-0">© 2025 Wrocław</p>
+</footer>
