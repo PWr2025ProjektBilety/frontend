@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+import {FormsModule, NgForm} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -11,17 +11,23 @@ import { NgIf } from '@angular/common';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  login = '';
+  username = '';
   password = '';
-  error = '';
+  message = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  loginUser() {
-    this.error = '';
-    this.authService.login(this.login, this.password).subscribe({
-      next: () => this.router.navigate(['/tickets']),
-      error: err => this.error = err.message
+  onLogin() {
+    this.authService.login({ username: this.username, password: this.password }).subscribe({
+      next: (res) => {
+        this.message = 'Logged in successfully!';
+        console.log(res);
+        this.router.navigate(['']);
+      },
+      error: (err) => {
+        this.message = err.error || 'Login failed';
+        console.log(err);
+      },
     });
   }
 }

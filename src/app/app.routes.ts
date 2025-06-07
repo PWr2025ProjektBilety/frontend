@@ -5,13 +5,19 @@ import {LoginComponent} from './components/auth/login/login.component';
 import {TicketsComponent} from './components/passenger/tickets/tickets.component';
 import {CheckTicketComponent} from './components/ticket-validator/check-ticket/check-ticket.component';
 import {TicketOfferComponent} from './components/passenger/ticket-offer/ticket-offer.component';
-
+import {TicketResolver} from './resolvers/tickets.resolver';
+import {BuyTicketComponent} from './components/passenger/buy-ticket/buy-ticket.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'tickets', component: TicketsComponent },
-  { path: 'offer', component: TicketOfferComponent},
+  {
+    path: 'offer',
+    component: TicketOfferComponent,
+    resolve: { tickets: TicketResolver }
+  },
+  { path: 'buy-ticket', component: BuyTicketComponent },
   { path: 'check-ticket', component: CheckTicketComponent },
 ];

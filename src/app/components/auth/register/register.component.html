@@ -1,12 +1,60 @@
-<form (submit)="register(); $event.preventDefault()">
-  <label>Login:</label>
-  <input type="login" [(ngModel)]="login" name="login" required />
+<h1 class="text-center">Rejestracja</h1>
+<form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm" novalidate class="w-25 mx-auto mt-4 p-4 border rounded">
 
-  <label>Hasło:</label>
-  <input type="password" [(ngModel)]="password" name="password" required />
+  <div class="mb-3">
+    <label for="username" class="form-label">Nazwa użytkownika</label>
+    <input
+      id="username"
+      name="username"
+      type="text"
+      [(ngModel)]="username"
+      #usernameInput="ngModel"
+      required
+      minlength="4"
+      pattern="^[a-zA-Z0-9]+$"
+      placeholder="Wpisz nazwę użytkownika..."
+      class="form-control"
+      [class.is-invalid]="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)"
+      [class.is-valid]="usernameInput.valid && (usernameInput.dirty || usernameInput.touched)"
+    />
+    <div *ngIf="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)" class="invalid-feedback">
+      <div *ngIf="usernameInput.errors?.['required']">Username is required.</div>
+      <div *ngIf="usernameInput.errors?.['minlength']">Username must be at least 4 characters.</div>
+      <div *ngIf="usernameInput.errors?.['pattern']">Username can contain only letters and numbers.</div>
+    </div>
+  </div>
 
-  <button type="submit">Zarejestruj się</button>
+  <div class="mb-3">
+    <label for="password" class="form-label">Hasło</label>
+    <input
+      id="password"
+      name="password"
+      type="password"
+      [(ngModel)]="password"
+      #passwordInput="ngModel"
+      required
+      minlength="8"
+      pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+      placeholder="Wpisz hasło..."
+      class="form-control"
+      [class.is-invalid]="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
+      [class.is-valid]="passwordInput.valid && (passwordInput.dirty || passwordInput.touched)"
+      title="Password must be at least 8 characters, include one uppercase letter, one number and one special character."
+    />
+    <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="invalid-feedback">
+      <div *ngIf="passwordInput.errors?.['required']">Password is required.</div>
+      <div *ngIf="passwordInput.errors?.['minlength']">Password must be at least 8 characters.</div>
+      <div *ngIf="passwordInput.errors?.['pattern']">
+        Password must include uppercase letter, number, and special character.
+      </div>
+    </div>
+  </div>
 
-  <div *ngIf="error" style="color: red;">{{ error }}</div>
-  <div *ngIf="success" style="color: green;">{{ success }}</div>
+  <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">
+    Zarejestruj się
+  </button>
+
+  <p *ngIf="message" [style.color]="message.includes('success') ? 'green' : 'orange'" class="mt-3 fw-semibold">
+    {{ message }}
+  </p>
 </form>

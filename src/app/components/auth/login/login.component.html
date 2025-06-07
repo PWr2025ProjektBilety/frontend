@@ -1,15 +1,43 @@
-<div class="container mt-5" style="max-width: 400px;">
-  <h2>Zaloguj się</h2>
-  <form (ngSubmit)="loginUser()">
-    <div class="mb-3">
-      <label for="login" class="form-label">Login</label>
-      <input [(ngModel)]="login" name="login" id="login" type="text" class="form-control" required>
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Hasło</label>
-      <input [(ngModel)]="password" name="password" id="password" type="password" class="form-control" required>
-    </div>
-    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-    <button type="submit" class="btn btn-primary">Zaloguj się</button>
-  </form>
-</div>
+<h1 class="text-center">Logowanie</h1>
+<form (ngSubmit)="onLogin()" class="w-25 mx-auto mt-4 p-4 border rounded">
+
+  <div class="mb-3">
+    <label for="loginUsername" class="form-label">Nazwa użytkownika</label>
+    <input
+      type="text"
+      id="loginUsername"
+      name="username"
+      [(ngModel)]="username"
+      placeholder="Wpisz nazwę użytkownika..."
+      [class.is-invalid]="message"
+    class="form-control"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="loginPassword" class="form-label">Hasło</label>
+    <input
+      type="password"
+      id="loginPassword"
+      name="password"
+      [(ngModel)]="password"
+      placeholder="Wpisz hasło..."
+      [class.is-invalid]="message"
+      class="form-control"
+    />
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="message" class="text-danger mb-3">
+    {{ message }}
+  </div>
+
+  <button
+    type="submit"
+    class="btn btn-primary w-100"
+    [disabled]="!username || !password"
+  >
+    Zaloguj się
+  </button>
+
+</form>

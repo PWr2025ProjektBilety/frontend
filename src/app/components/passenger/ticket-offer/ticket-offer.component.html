@@ -1,1 +1,45 @@
-<p>ticket-offer works!</p>
+<div class="ticket-offer">
+  <h2>Oferta biletowa</h2>
+  <div *ngIf="tickets.length === 0">Brak dostępnych biletów.</div>
+
+  <div *ngIf="tickets.length > 0" class="row">
+    <div class="col-md-4">
+      <h3>Bilety jednorazowe</h3>
+      <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: singleRideTickets, validityLabel: 'minut' }"></ng-container>
+    </div>
+
+    <div class="col-md-4">
+      <h3>Bilety czasowe</h3>
+      <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: timeBasedTickets, validityLabel: 'minut' }"></ng-container>
+    </div>
+
+    <div class="col-md-4">
+      <h3>Bilety okresowe</h3>
+      <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: periodicTickets, validityLabel: 'dni' }"></ng-container>
+    </div>
+  </div>
+
+  <ng-template #ticketCard let-tickets let-validityLabel="validityLabel">
+    <div *ngFor="let ticket of tickets"
+         class="card mb-3 p-3 border"
+         [ngClass]="{'bg-warning bg-opacity-25': ticket.discountAvailable}">
+      <div class="d-flex align-items-center">
+        <div class="me-3 fs-1 fw-bold text-primary">{{ ticket.price }}zł</div>
+        <div>
+          <p class="mb-1 fw-semibold" [ngClass]="ticket.discountAvailable ? 'text-success' : 'text-secondary'">
+            {{ ticket.discountAvailable ? 'Dostępny Bilet ulgowy ze zniżką dla uczniów, studentów i seniorów.' : 'Dostępny jedynie bilet normalny' }}
+          </p>
+          <p *ngIf="ticket.validityPeriod">
+            <strong>Okres ważności:</strong> {{ ticket.validityPeriod }} {{ validityLabel }}
+          </p>
+        </div>
+      </div>
+      <button class="btn btn-outline-success btn-sm mt-2"
+              (click)="goToBuyTicket(ticket)">
+        <i class="bi bi-cart-plus"></i> Kup bilet
+      </button>
+
+    </div>
+  </ng-template>
+
+</div>

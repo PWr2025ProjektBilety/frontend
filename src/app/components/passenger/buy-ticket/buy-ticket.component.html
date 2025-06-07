@@ -1,0 +1,84 @@
+<div class="buy-ticket-container container mt-5">
+  <h2 class="text-center mb-4 fw-bold">Kup bilet</h2>
+
+  <div *ngIf="ticket; else noTicket" class="card p-4 shadow-sm mx-auto" style="max-width: 500px;">
+    <h3 class="text-center text-primary mb-3">
+      {{ getTicketTypePolish(ticket.type) }}
+    </h3>
+
+    <p class="display-4 text-center fw-bold mb-3">{{ ticket.price }} zł</p>
+
+    <p *ngIf="ticket.validityPeriod" class="text-center mb-3 fs-5">
+      <strong>Okres ważności:</strong> {{ ticket.validityPeriod }}
+      {{ ticket.type === 'PERIODIC_TICKET' ? 'dni' : 'minut' }}
+    </p>
+
+    <p class="text-center mb-3 fs-5">
+      <strong>Zniżka dostępna:</strong>
+      <span [ngClass]="ticket.discountAvailable ? 'text-success' : 'text-danger'">
+        {{ ticket.discountAvailable ? 'Tak' : 'Nie' }}
+      </span>
+    </p>
+
+    <p *ngIf="ticket.discountAvailable" class="text-center fst-italic text-muted mb-4">
+      Ulga 50% dla uczniów, studentów i emerytów.
+    </p>
+
+    <!-- Checkbox na ulgę -->
+    <div *ngIf="ticket.discountAvailable" class="form-check mb-4 d-flex justify-content-center">
+      <input
+        type="checkbox"
+        id="reducedCheckbox"
+        class="form-check-input me-2"
+        [(ngModel)]="reduced"
+      />
+      <label for="reducedCheckbox" class="form-check-label fs-5">
+        Kup bilet ulgowy (50% zniżki)
+      </label>
+    </div>
+
+    <!-- Wyśrodkowane przyciski -->
+    <div class="d-flex justify-content-center gap-3">
+      <button
+        class="btn btn-success btn-lg px-4"
+        (click)="buy()"
+        [disabled]="isLoading"
+      >
+        Kup
+      </button>
+      <button
+        class="btn btn-secondary btn-lg px-4"
+        (click)="cancel()"
+        [disabled]="isLoading"
+      >
+        Anuluj
+      </button>
+    </div>
+  </div>
+
+  <ng-template #noTicket>
+    <p class="text-center text-danger mt-5 fs-5">
+      Brak danych biletu. Powrót do listy...
+    </p>
+  </ng-template>
+
+  <div
+    *ngIf="message"
+    class="popup-backdrop d-flex justify-content-center align-items-center"
+    style="position: fixed; inset: 0; z-index: 1050;"
+  >
+    <div
+      class="popup-content bg-white p-4 rounded shadow-lg text-center"
+      style="min-width: 300px; max-width: 90vw;"
+    >
+      <p class="fs-5 mb-4">{{ message }}</p>
+      <button
+        type="button"
+        class="btn btn-outline-success"
+        (click)="closePopup()"
+      >
+        Zamknij
+      </button>
+    </div>
+  </div>
+</div>

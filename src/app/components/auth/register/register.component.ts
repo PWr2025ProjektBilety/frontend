@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
+import {AuthService} from '../../../services/auth.service';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -14,21 +14,20 @@ import { NgIf } from '@angular/common';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
-  login = '';
+  username = '';
   password = '';
-  error = '';
-  success = '';
+  message = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private userService: AuthService) {}
 
-  register() {
-    this.error = '';
-    this.authService.register(this.login, this.password).subscribe({
-      next: user => {
-        this.success = `Rejestracja udana! Witaj, ${user.login}. Jesteś teraz zalogowany.`;
-        this.router.navigate(['/tickets']);
+  onSubmit(form: NgForm) {
+    this.userService.register({ username: this.username, password: this.password }).subscribe({
+      next: (res) => {this.message = res
+      console.log(res)
+      form.reset()},
+      error: (err) => {this.message = err.error || 'Registration failed'
+        console.log(err)
       },
-      error: err => this.error = err.message
     });
   }
 }

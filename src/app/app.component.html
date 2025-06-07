@@ -11,13 +11,13 @@
         <li *ngIf="!isLoggedIn" class="nav-item">
           <a class="nav-link text-white" routerLink="/register">Rejestracja</a>
         </li>
-        <li *ngIf="isLoggedIn && currentUser?.role === 'passenger'" class="nav-item">
+        <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
           <a class="nav-link text-white" routerLink="/tickets">Moje bilety</a>
         </li>
-        <li *ngIf="isLoggedIn && currentUser?.role === 'passenger'" class="nav-item">
+        <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
           <a class="nav-link text-white" routerLink="/offer">Oferty biletowe</a>
         </li>
-        <li *ngIf="isLoggedIn && currentUser?.role === 'controller'" class="nav-item">
+        <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_INSPECTOR'" class="nav-item">
           <a class="nav-link text-white" routerLink="/check-ticket">Sprawdź bilet</a>
         </li>
 
