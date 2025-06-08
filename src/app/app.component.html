@@ -1,38 +1,58 @@
-<header class="bg-primary text-white p-3">
+<div class="d-flex flex-column min-vh-100 pt-5">
+  <!-- Header -->
+  <header id="main-header" class="bg-primary text-white py-3 shadow-sm fixed-top transition-top">
   <div class="container d-flex justify-content-between align-items-center">
-    <h1 class="h4 m-0">
-      <a routerLink="/" class="text-white text-decoration-none">Elektroniczny Bilet Miejski</a>
-    </h1>
-    <nav>
-      <ul class="nav">
-        <li *ngIf="!isLoggedIn" class="nav-item">
-          <a class="nav-link text-white" routerLink="/login">Logowanie</a>
-        </li>
-        <li *ngIf="!isLoggedIn" class="nav-item">
-          <a class="nav-link text-white" routerLink="/register">Rejestracja</a>
-        </li>
-        <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
-          <a class="nav-link text-white" routerLink="/tickets">Moje bilety</a>
-        </li>
-        <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
-          <a class="nav-link text-white" routerLink="/offer">Oferty biletowe</a>
-        </li>
-        <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_INSPECTOR'" class="nav-item">
-          <a class="nav-link text-white" routerLink="/check-ticket">Sprawdź bilet</a>
-        </li>
+      <h1 class="h5 m-0">
+        <a routerLink="/" class="text-white text-decoration-none">🎫 Elektroniczny Bilet Miejski</a>
+      </h1>
+      <nav>
+        <ul class="nav">
+          <li *ngIf="!isLoggedIn" class="nav-item">
+            <a class="nav-link text-white" routerLink="/login" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+              Logowanie
+            </a>
+          </li>
+          <li *ngIf="!isLoggedIn" class="nav-item">
+            <a class="nav-link text-white" routerLink="/register" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+              Rejestracja
+            </a>
+          </li>
+          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
+            <a class="nav-link text-white" routerLink="/tickets" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+              Moje bilety
+            </a>
+          </li>
+          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
+            <a class="nav-link text-white" routerLink="/offer" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+              Oferty biletowe
+            </a>
+          </li>
+          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_INSPECTOR'" class="nav-item">
+            <a class="nav-link text-white" routerLink="/check-ticket" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+              Sprawdź bilet
+            </a>
+          </li>
+          <li *ngIf="isLoggedIn" class="nav-item">
+            <a class="nav-link text-white" href="#" (click)="logout()">
+              Wyloguj się
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-        <li *ngIf="isLoggedIn" class="nav-item">
-          <a class="nav-link text-white" href="#" (click)="logout()">Wyloguj się</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</header>
+  <!-- Main content -->
+  <main class="flex-grow-1 py-4 container mt-5">
+    <div class="container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
 
-<main class="container my-4">
-  <router-outlet></router-outlet>
-</main>
-
-<footer class="bg-light text-center py-3">
-  <p class="mb-0">© 2025 Wrocław</p>
-</footer>
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-auto">
+    <div class="container">
+      <small>© 2025 Miasto Wrocław.</small>
+    </div>
+  </footer>
+</div>

@@ -1,1 +1,32 @@
-<p>check-ticket works!</p>
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Sprawdź bilet</h2>
+
+  <div class="card shadow-sm p-4 mx-auto" style="max-width: 400px;">
+    <div class="mb-3">
+      <label for="ticketCode" class="form-label">Kod biletu</label>
+      <input id="ticketCode" class="form-control" [(ngModel)]="ticketCode" placeholder="Np. 1749372583580-GTT8" />
+    </div>
+
+    <div class="mb-3">
+      <label for="vehicleId" class="form-label">Numer pojazdu</label>
+      <input id="vehicleId" class="form-control" [(ngModel)]="vehicleId" placeholder="Np. 123" />
+    </div>
+
+    <button
+      class="btn btn-primary"
+      (click)="checkTicket()"
+      [disabled]="!ticketCode.trim() || !vehicleId.trim()"
+    >
+      Sprawdź
+    </button>
+
+    <div *ngIf="resultMessage" class="alert text-center mt-3"
+         [ngClass]="{
+       'alert-success': resultType === 'success',
+       'alert-danger': resultType === 'danger'
+     }">
+      {{ resultMessage }}
+    </div>
+
+  </div>
+</div>

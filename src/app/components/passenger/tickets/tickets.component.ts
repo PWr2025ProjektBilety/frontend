@@ -4,7 +4,6 @@ import {
   PurchasedTicketSingleBasedDTO,
   PurchasedTicketTimeBasedDTO
 } from '../../../models/ticket.model';
-import {HttpClient} from '@angular/common/http';
 import {DatePipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import {TicketService} from '../../../services/ticket.service';
 import {FormsModule} from '@angular/forms';
@@ -24,14 +23,16 @@ import {FormsModule} from '@angular/forms';
 export class TicketsComponent implements OnInit {
   tickets: PurchasedTicketDTO[] = [];
   message: string | null = null;
-  isLoading = false;
+  isLoading: boolean = false;
+  selectedTicket: PurchasedTicketDTO | null = null;
+  selectedTicketDetails: PurchasedTicketDTO | null = null;
+  vehicleIdInput: string = '';
 
-  // Pagination
   page = 0;
-  size = 6;
+  size = 5;
   totalPages = 0;
 
-  constructor(private http: HttpClient, private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService) {}
 
   ngOnInit(): void {
     this.loadTickets();
@@ -111,8 +112,6 @@ export class TicketsComponent implements OnInit {
     return 'bg-light';
   }
 
-  selectedTicket: PurchasedTicketDTO | null = null;
-  vehicleIdInput: string = '';
 
   openValidationPopup(ticket: PurchasedTicketDTO) {
     this.selectedTicket = ticket;
@@ -147,7 +146,6 @@ export class TicketsComponent implements OnInit {
     }
   }
 
-
   validateTicket() {
     if (!this.selectedTicket || !this.vehicleIdInput.trim()) {
       return;
@@ -167,6 +165,14 @@ export class TicketsComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  showDetails(ticket: any): void {
+    this.selectedTicketDetails = ticket;
+  }
+
+  closeDetails(): void {
+    this.selectedTicketDetails = null;
   }
 
 

@@ -11,6 +11,7 @@ export class TicketService {
   private readonly BASE_URL = 'http://localhost:8080/api';
   private readonly TICKETS_URL = `${this.BASE_URL}/tickets`;
   private readonly PURCHASED_URL = `${this.BASE_URL}/boughttickets`;
+  private readonly INSPECTION_URL = `${this.BASE_URL}/ticket-inspection`;
 
   constructor(private http: HttpClient) {}
 
@@ -63,4 +64,18 @@ export class TicketService {
       }
     );
   }
+
+  checkTicket(ticketCode: string, vehicleId: string): Observable<boolean> {
+    const token = localStorage.getItem('jwtToken') || '';
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    const body = { ticketCode: ticketCode.trim(), vehicleId: vehicleId.trim() };
+
+    return this.http.post<boolean>(this.INSPECTION_URL, body, { headers });
+  }
+
 }

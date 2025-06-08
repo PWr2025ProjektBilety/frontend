@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import {Component, OnInit, OnDestroy, HostListener} from '@angular/core';
+import {Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { NgIf } from '@angular/common';
 import { User } from './models/auth.model';
@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, NgIf],
+  imports: [RouterOutlet, RouterLink, NgIf, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -35,5 +35,25 @@ export class AppComponent implements OnInit, OnDestroy {
 
   get isLoggedIn(): boolean {
     return !!this.currentUser;
+  }
+
+  lastScrollTop = 0;
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const header = document.getElementById('main-header');
+    if (!header) return;
+
+    const currentScroll = window.scrollY;
+
+    if (currentScroll > this.lastScrollTop) {
+      // Scroll w dół – ukryj nagłówek
+      header.style.top = '-120px';
+    } else {
+      // Scroll w górę – pokaż nagłówek
+      header.style.top = '0';
+    }
+
+    this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
   }
 }
