@@ -22,8 +22,31 @@ export interface BuyTicketRequest {
 
 export interface PurchasedTicketDTO {
   code: string;
-  purchaseDate: string;
-  reduced: boolean;
   finalPrice: number;
+  reduced: boolean;
+  purchaseDate: string;
 }
+
+export interface PurchasedTicketSingleBasedDTO extends PurchasedTicketDTO {
+  vehicleId: string;
+  validated: boolean;
+}
+
+export interface PurchasedTicketTimeBasedDTO extends PurchasedTicketDTO {
+  validated: boolean;
+  validationDate: string;
+  expirationDate: string;
+}
+
+export interface PurchasedTicketPeriodicDTO extends PurchasedTicketDTO {
+  validFrom: string;
+  validTo: string;
+}
+
+export interface TicketValidationRequest {
+  ticketId: string;
+  vehicleId: string;
+}
+
+
 

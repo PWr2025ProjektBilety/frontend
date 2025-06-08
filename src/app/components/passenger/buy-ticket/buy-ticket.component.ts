@@ -56,18 +56,20 @@ export class BuyTicketComponent implements OnInit {
       ticketType: this.ticket.type,
       ticketId: this.ticket.id,
       reduced: this.reduced,
-      startTime: null,
+      startTime: this.ticket.type === 'PERIODIC_TICKET' ? new Date().toISOString() : null
     };
 
     this.ticketService.buyTicket(request).subscribe({
       next: (res: PurchasedTicketDTO) => {
         this.message = `Kupiono bilet: kod ${res.code}, cena: ${res.finalPrice} zł`;
         this.isLoading = false;
+        console.log(res)
       },
       error: (err) => {
         this.message = 'Kupno biletu nie powiodło się.';
         console.error(err);
         this.isLoading = false;
+        console.log(request)
       }
     });
   }

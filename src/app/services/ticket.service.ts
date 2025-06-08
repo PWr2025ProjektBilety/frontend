@@ -1,39 +1,66 @@
 import { Injectable } from '@angular/core';
-import {BuyTicketRequest, PurchasedTicketDTO, Ticket} from '../models/ticket.model';
+import {BuyTicketRequest, PurchasedTicketDTO, Ticket, TicketValidationRequest} from '../models/ticket.model';
 import { Observable } from 'rxjs';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Page} from '../models/page.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TicketService {
-  private getTicketsUrl = 'http://localhost:8080/api/tickets';
-  private buyTicketsUrl = 'http://localhost:8080/api/boughttickets/buy';
+  private readonly BASE_URL = 'http://localhost:8080/api';
+  private readonly TICKETS_URL = `${this.BASE_URL}/tickets`;
+  private readonly PURCHASED_URL = `${this.BASE_URL}/boughttickets`;
+
   constructor(private http: HttpClient) {}
 
-  getAllTickets(): Observable<Ticket[]> {
+  private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('jwtToken') || '';
-
-    const headers = new HttpHeaders({
+    return new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
+  }
 
-    return this.http.get<Ticket[]>(this.getTicketsUrl, { headers });
+  getAllTickets(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(this.TICKETS_URL, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   buyTicket(request: BuyTicketRequest): Observable<PurchasedTicketDTO> {
-    const token = localStorage.getItem('jwtToken') || '';
-
-    if (!token) {
-      // Możesz rzucić błąd lub zwrócić Observable z błędem
-      throw new Error('User is not authorized!.');
-    }
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.post<PurchasedTicketDTO>(this.buyTicketsUrl, request, { headers });
+    return this.http.post<PurchasedTicketDTO>(
+      `${this.PURCHASED_URL}/buy`,
+      request,
+      { headers: this.getAuthHeaders() }
+    );
   }
 
+  getTicketHistory(page: number, size: number): Observable<Page<PurchasedTicketDTO>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<Page<PurchasedTicketDTO>>(
+      `${this.PURCHASED_URL}/history`,
+      {
+        headers: this.getAuthHeaders(),
+        params,
+      }
+    );
+  }
+
+  validateTicket(ticketId: string, vehicleId: string): Observable<string> {
+    const request: TicketValidationRequest = { ticketId, vehicleId };
+
+    const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
+
+    return this.http.post<string>(
+      `${this.PURCHASED_URL}/validate`,
+      request,
+      {
+        headers,
+        responseType: 'text' as 'json',
+      }
+    );
+  }
 }
