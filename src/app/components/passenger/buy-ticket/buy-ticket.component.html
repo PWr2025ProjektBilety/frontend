@@ -37,12 +37,28 @@
       </label>
     </div>
 
+    <!-- Data aktywacji biletu okresowego -->
+
+    <div *ngIf="ticket.type === 'PERIODIC_TICKET'" class="mb-4 text-center">
+      <label for="activationDate" class="form-label fw-bold big-data-picker">Wybierz datę aktywacji:</label>
+      <input
+        id="activationDate"
+        type="date"
+        class="form-control mx-auto big-datepicker"
+        style="max-width: 225px;"
+        [(ngModel)]="activationDate"
+        [min]="minDate"
+        [max]="maxDate"
+      />
+    </div>
+
+
     <!-- Wyśrodkowane przyciski -->
     <div class="d-flex justify-content-center gap-3">
       <button
         class="btn btn-success btn-lg px-4"
         (click)="buy()"
-        [disabled]="isLoading"
+        [disabled]="isLoading || (ticket.type === 'PERIODIC_TICKET' && !activationDate)"
       >
         Kup
       </button>

@@ -22,6 +22,9 @@ export class BuyTicketComponent implements OnInit {
   reduced: boolean = false
   message: string | null = null;
   isLoading: boolean = false;
+  activationDate: string = this.getTodayAsDateString();
+  minDate: string = this.getTodayAsDateString();
+  maxDate: string = this.getMaxDateString(6);
 
   constructor(
     private router: Router,
@@ -46,34 +49,6 @@ export class BuyTicketComponent implements OnInit {
 
   }
 
-  buy() {
-    if (!this.ticket) return;
-
-    this.isLoading = true;
-    this.message = null;
-
-    const request: BuyTicketRequest = {
-      ticketType: this.ticket.type,
-      ticketId: this.ticket.id,
-      reduced: this.reduced,
-      startTime: this.ticket.type === 'PERIODIC_TICKET' ? new Date().toISOString() : null
-    };
-
-    this.ticketService.buyTicket(request).subscribe({
-      next: (res: PurchasedTicketDTO) => {
-        this.message = `Kupiono bilet: kod ${res.code}, cena: ${res.finalPrice} zł`;
-        this.isLoading = false;
-        console.log(res)
-      },
-      error: (err) => {
-        this.message = 'Kupno biletu nie powiodło się.';
-        console.error(err);
-        this.isLoading = false;
-        console.log(request)
-      }
-    });
-  }
-
   cancel() {
     this.router.navigate(['/offer']);
   }
@@ -92,4 +67,49 @@ export class BuyTicketComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  getTodayAsDateString(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0]; // YYYY-MM-DD
+  }
+
+  getMaxDateString(months: number): string {
+    const date = new Date();
+    date.setMonth(date.getMonth() + months);
+    return date.toISOString().split('T')[0];
+  }
+
+  getActivationDateISO(): string {
+    if (!this.activationDate) return '';
+
+    return new Date(this.activationDate + 'T00:00:00Z').toISOString();
+  }
+
+  buy() {
+    if (!this.ticket) return;
+
+    this.isLoading = true;
+    this.message = null;
+
+    const request: BuyTicketRequest = {
+      ticketType: this.ticket.type,
+      ticketId: this.ticket.id,
+      reduced: this.reduced,
+      startTime: this.ticket.type === 'PERIODIC_TICKET' ? this.getActivationDateISO(): null
+    };
+
+    this.ticketService.buyTicket(request).subscribe({
+      next: (res: PurchasedTicketDTO) => {
+        this.message = `Kupiono bilet: kod ${res.code}, cena: ${res.finalPrice} zł`;
+        this.isLoading = false;
+        console.log(res)
+        console.log(request)
+      },
+      error: (err) => {
+        this.message = 'Kupno biletu nie powiodło się.';
+        console.error(err);
+        this.isLoading = false;
+        console.log(request)
+      }
+    });
+  }
 }
