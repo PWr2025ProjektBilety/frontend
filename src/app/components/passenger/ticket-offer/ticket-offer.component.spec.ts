@@ -60,20 +60,12 @@ describe('TicketOfferComponent', () => {
 
   it('should store selected ticket and navigate on goToBuyTicket', () => {
     const ticket = mockTickets[0];
-    spyOn(localStorage, 'setItem');
+    spyOn(sessionStorage, 'setItem');
 
     component.goToBuyTicket(ticket);
 
-    expect(localStorage.setItem).toHaveBeenCalledWith('selectedTicket', JSON.stringify(ticket));
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/buy-ticket', { state: { ticket } }]);
+    expect(sessionStorage.setItem).toHaveBeenCalledWith('selectedTicket', JSON.stringify(ticket));
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/buy-ticket'], { state: { ticket } });
   });
 
-  it('should unsubscribe on destroy', () => {
-    component.ngOnInit();
-    spyOn(component['ticketSub']!, 'unsubscribe');
-
-    component.ngOnDestroy();
-
-    expect(component['ticketSub']?.unsubscribe).toHaveBeenCalled();
-  });
 });

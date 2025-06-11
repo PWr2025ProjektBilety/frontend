@@ -152,12 +152,10 @@ export class TicketsComponent implements OnInit {
   showMessage(msg: string) {
     this.message = msg;
 
-    // Wyczyść poprzedni timeout jeśli istnieje
     if (this.messageTimeout) {
       clearTimeout(this.messageTimeout);
     }
 
-    // Ustaw nowy timeout na 5 sekund
     this.messageTimeout = setTimeout(() => {
       this.message = null;
     }, 5000);

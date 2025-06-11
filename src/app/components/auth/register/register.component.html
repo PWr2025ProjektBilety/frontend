@@ -8,6 +8,7 @@
       name="username"
       type="text"
       [(ngModel)]="username"
+      (ngModelChange)="clearMessage()"
       #usernameInput="ngModel"
       required
       minlength="4"
@@ -31,6 +32,7 @@
       name="password"
       type="password"
       [(ngModel)]="password"
+      (ngModelChange)="clearMessage()"
       #passwordInput="ngModel"
       required
       minlength="8"

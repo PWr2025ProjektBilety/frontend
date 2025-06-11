@@ -8,17 +8,42 @@ import { NgIf } from '@angular/common';
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
 
   const mockUser: User = { username: 'testuser', role: 'ROLE_USER' };
   const mockInspector: User = { username: 'inspector', role: 'ROLE_INSPECTOR' };
 
+  class MockAuthService {
+    private _user: User | null = null;
+
+    isAuthenticated(): boolean {
+      return !!this._user;
+    }
+
+    getCurrentUser(): User | null {
+      return this._user;
+    }
+
+    setMockUser(user: User | null) {
+      this._user = user;
+    }
+
+    get isUser(): boolean {
+      return this._user?.role === 'ROLE_USER';
+    }
+
+    get isController(): boolean {
+      return this._user?.role === 'ROLE_INSPECTOR';
+    }
+  }
+
+  let mockAuthService: MockAuthService;
+
   beforeEach(async () => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated', 'getCurrentUser']);
+    mockAuthService = new MockAuthService();
 
     await TestBed.configureTestingModule({
       imports: [NgIf, HomeComponent],
-      providers: [{ provide: AuthService, useValue: authServiceSpy }]
+      providers: [{ provide: AuthService, useValue: mockAuthService }]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
@@ -30,8 +55,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set isLoggedIn and currentUser on init', () => {
-    authServiceSpy.isAuthenticated.and.returnValue(true);
-    authServiceSpy.getCurrentUser.and.returnValue(mockUser);
+    mockAuthService.setMockUser(mockUser);
 
     component.ngOnInit();
 
@@ -40,8 +64,7 @@ describe('HomeComponent', () => {
   });
 
   it('should display user message when logged in as ROLE_USER', () => {
-    authServiceSpy.isAuthenticated.and.returnValue(true);
-    authServiceSpy.getCurrentUser.and.returnValue(mockUser);
+    mockAuthService.setMockUser(mockUser);
 
     component.ngOnInit();
     fixture.detectChanges();
@@ -55,15 +78,24 @@ describe('HomeComponent', () => {
   });
 
   it('should display inspector message when logged in as ROLE_INSPECTOR', () => {
-    authServiceSpy.isAuthenticated.and.returnValue(true);
-    authServiceSpy.getCurrentUser.and.returnValue(mockInspector);
+    mockAuthService.setMockUser(mockInspector);
 
     component.ngOnInit();
     fixture.detectChanges();
 
     const inspectorGreeting = fixture.debugElement.query(By.css('div p.fs-5'));
     expect(inspectorGreeting.nativeElement.textContent).toContain(`Cześć, kontrolerze ${mockInspector.username}!`);
-
     expect(fixture.nativeElement.textContent).toContain('Sprawdź bilet');
+  });
+
+  it('should display info for anonymous user', () => {
+    mockAuthService.setMockUser(null);
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('Prosty system do kupowania i weryfikacji biletów transportu miejskiego');
+    expect(text).toContain('Możesz się zarejestrować lub zalogować');
   });
 });

@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
   isLoggedIn: boolean = false;
   currentUser: User | null = null;
 
-  constructor(private authService: AuthService) {}
+  constructor(protected authService: AuthService) {}
 
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isAuthenticated();

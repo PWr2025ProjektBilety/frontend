@@ -16,7 +16,7 @@ export class TicketService {
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('jwtToken') || '';
+    const token = sessionStorage.getItem('jwtToken') || '';
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -66,12 +66,7 @@ export class TicketService {
   }
 
   checkTicket(ticketCode: string, vehicleId: string): Observable<boolean> {
-    const token = localStorage.getItem('jwtToken') || '';
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
+    const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
 
     const body = { ticketCode: ticketCode.trim(), vehicleId: vehicleId.trim() };
 

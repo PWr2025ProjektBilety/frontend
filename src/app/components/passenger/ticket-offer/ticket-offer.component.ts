@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TicketService } from '../../../services/ticket.service';
 import { Ticket } from '../../../models/ticket.model';
-import { Subscription } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import {Router} from '@angular/router';
@@ -12,18 +11,16 @@ import {Router} from '@angular/router';
   standalone: true,
   imports: [HttpClientModule, CommonModule],
 })
-export class TicketOfferComponent implements OnInit, OnDestroy {
+export class TicketOfferComponent implements OnInit {
   tickets: Ticket[] = [];
   singleRideTickets: Ticket[] = [];
   timeBasedTickets: Ticket[] = [];
   periodicTickets: Ticket[] = [];
 
-  private ticketSub: Subscription | undefined;
-
   constructor(private ticketService: TicketService, private router: Router) {}
 
   ngOnInit(): void {
-    this.ticketSub = this.ticketService.getAllTickets().subscribe({
+    this.ticketService.getAllTickets().subscribe({
       next: (data) => {
         this.tickets = data;
         // Podział biletów na typy
@@ -38,11 +35,8 @@ export class TicketOfferComponent implements OnInit, OnDestroy {
   }
 
   goToBuyTicket(ticket: Ticket) {
-    localStorage.setItem('selectedTicket', JSON.stringify(ticket));
-    this.router.navigate(['/buy-ticket', { state: { ticket } }]);
+    sessionStorage.setItem('selectedTicket', JSON.stringify(ticket));
+    this.router.navigate(['/buy-ticket'], { state: { ticket } });
   }
 
-  ngOnDestroy(): void {
-    this.ticketSub?.unsubscribe();
-  }
 }

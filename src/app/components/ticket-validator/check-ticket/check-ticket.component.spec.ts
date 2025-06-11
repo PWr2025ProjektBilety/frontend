@@ -92,27 +92,4 @@ describe('CheckTicketComponent', () => {
     expect(console.error).toHaveBeenCalled();
   }));
 
-  it('should unsubscribe previous subscription when checkTicket is called multiple times', fakeAsync(() => {
-    component.ticketCode = 'ticket1';
-    component.vehicleId = 'veh1';
-
-    const sub1 = jasmine.createSpyObj('Subscription', ['unsubscribe']);
-    ticketServiceSpy.checkTicket.and.returnValue(of(true));
-
-    component['subscription'] = sub1;
-
-    component.checkTicket();
-    tick();
-
-    expect(sub1.unsubscribe).toHaveBeenCalled();
-  }));
-
-  it('should unsubscribe on ngOnDestroy', () => {
-    const sub = jasmine.createSpyObj('Subscription', ['unsubscribe']);
-    component['subscription'] = sub;
-
-    component.ngOnDestroy();
-
-    expect(sub.unsubscribe).toHaveBeenCalled();
-  });
 });

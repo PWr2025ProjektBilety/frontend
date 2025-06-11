@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {BehaviorSubject, Observable, tap} from 'rxjs';
 import {User, JwtPayload} from '../models/auth.model';
 import {jwtDecode} from 'jwt-decode';
+import {Router} from '@angular/router';
 
 interface RegisterRequest {
   username: string;
@@ -21,10 +22,9 @@ export class AuthService {
   private apiUrl = 'http://localhost:8080/api/user';
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    const storedUser = localStorage.getItem('currentUser');
+  constructor(private http: HttpClient, private router: Router) {
+    const storedUser = sessionStorage.getItem('currentUser');
     if (storedUser) {
       this.currentUserSubject.next(JSON.parse(storedUser));
     }
@@ -37,7 +37,7 @@ export class AuthService {
   login(request: LoginRequest): Observable<string> {
     return this.http.post(`${this.apiUrl}/login`, request, { responseType: 'text' }).pipe(
       tap(token => {
-        localStorage.setItem('jwtToken', token);
+        sessionStorage.setItem('jwtToken', token);
 
         const decoded = jwtDecode<JwtPayload>(token);
 
@@ -47,16 +47,19 @@ export class AuthService {
         };
         console.log(user)
 
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        sessionStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
       })
     );
   }
 
   logout(): void {
-    localStorage.removeItem('jwtToken');
-    localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('jwtToken');
+    sessionStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+    this.router.navigate(['/']).then(() => {
+      window.location.reload();
+    });
   }
 
   getCurrentUser(): User | null {
@@ -64,7 +67,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem('jwtToken');
     if (!token) return false;
 
     try {
