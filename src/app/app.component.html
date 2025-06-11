@@ -7,32 +7,32 @@
       </h1>
       <nav>
         <ul class="nav">
-          <li *ngIf="!isLoggedIn" class="nav-item">
+          <li *ngIf="!authService.isLoggedIn" class="nav-item">
             <a class="nav-link text-white" routerLink="/login" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
               Logowanie
             </a>
           </li>
-          <li *ngIf="!isLoggedIn" class="nav-item">
+          <li *ngIf="!authService.isLoggedIn " class="nav-item">
             <a class="nav-link text-white" routerLink="/register" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
               Rejestracja
             </a>
           </li>
-          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
             <a class="nav-link text-white" routerLink="/tickets" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
               Moje bilety
             </a>
           </li>
-          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
             <a class="nav-link text-white" routerLink="/offer" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
               Oferty biletowe
             </a>
           </li>
-          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_INSPECTOR'" class="nav-item">
+          <li *ngIf="authService.isLoggedIn && authService.isController" class="nav-item">
             <a class="nav-link text-white" routerLink="/check-ticket" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
               Sprawdź bilet
             </a>
           </li>
-          <li *ngIf="isLoggedIn" class="nav-item">
+          <li *ngIf="authService.isLoggedIn" class="nav-item">
             <a class="nav-link text-white" href="#" (click)="logout()">
               Wyloguj się
             </a>

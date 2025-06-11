@@ -76,4 +76,16 @@ export class AuthService {
     }
   }
 
+  get isLoggedIn(): boolean {
+    return !!this.getCurrentUser() && this.isAuthenticated();
+  }
+
+  get isUser(): boolean {
+    return this.getCurrentUser()?.role == 'ROLE_USER';
+  }
+
+  get isController(): boolean {
+    return this.getCurrentUser()?.role == 'ROLE_INSPECTOR';
+  }
+
 }

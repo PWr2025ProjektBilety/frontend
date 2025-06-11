@@ -5,6 +5,7 @@ import { NgIf } from '@angular/common';
 import { User } from './models/auth.model';
 import { registerLocaleData } from '@angular/common';
 import localePl from '@angular/common/locales/pl';
+import {Observable, Subscription} from 'rxjs';
 
 registerLocaleData(localePl);
 
@@ -14,23 +15,25 @@ registerLocaleData(localePl);
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  title = 'frontend';
+export class AppComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
+  private subscription?: Subscription;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(public authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser();
+    this.subscription = this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
   }
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  get isLoggedIn(): boolean {
-    return !!this.currentUser;
+    this.router.navigate(['/']);
   }
 
   lastScrollTop = 0;

@@ -54,7 +54,7 @@
     Zarejestruj się
   </button>
 
-  <p *ngIf="message" [style.color]="message.includes('success') ? 'green' : 'orange'" class="mt-3 fw-semibold">
+  <p *ngIf="message" [style.color]="message.includes('pomyślnie') ? 'green' : 'orange'" class="mt-3 fw-semibold">
     {{ message }}
   </p>
 </form>

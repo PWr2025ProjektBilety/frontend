@@ -7,17 +7,36 @@ import {CheckTicketComponent} from './components/ticket-validator/check-ticket/c
 import {TicketOfferComponent} from './components/passenger/ticket-offer/ticket-offer.component';
 import {TicketResolver} from './resolvers/tickets.resolver';
 import {BuyTicketComponent} from './components/passenger/buy-ticket/buy-ticket.component';
+import {AuthGuard} from './guards/auth.guard';
+import {NoAuthGuard} from './guards/noAuth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'tickets', component: TicketsComponent },
+  { path: 'register', component: RegisterComponent, canActivate: [NoAuthGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
+  {
+    path: 'tickets',
+    component: TicketsComponent,
+    canActivate: [AuthGuard],
+    data: { role: 'ROLE_USER' }
+  },
   {
     path: 'offer',
     component: TicketOfferComponent,
-    resolve: { tickets: TicketResolver }
+    resolve: { tickets: TicketResolver },
+    canActivate: [AuthGuard],
+    data: { role: 'ROLE_USER'}
   },
-  { path: 'buy-ticket', component: BuyTicketComponent },
-  { path: 'check-ticket', component: CheckTicketComponent },
+  {
+    path: 'buy-ticket',
+    component: BuyTicketComponent,
+    canActivate: [AuthGuard],
+    data: { role: 'ROLE_USER'}
+  },
+  {
+    path: 'check-ticket',
+    component: CheckTicketComponent,
+    canActivate: [AuthGuard],
+    data: {role: 'ROLE_INSPECTOR'}
+  }
 ];
