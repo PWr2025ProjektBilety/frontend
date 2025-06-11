@@ -20,12 +20,12 @@ export class LoginComponent {
   onLogin() {
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (res) => {
-        this.message = 'Logged in successfully!';
+        this.message = 'Zalogowano się pomyślnie!';
         console.log(res);
         this.router.navigate(['']);
       },
       error: (err) => {
-        this.message = err.error || 'Login failed';
+        this.message = 'Nie udało się zalogować. Nazwa użytkownika lub hasło są niepoprawne.';
         console.log(err);
       },
     });

@@ -3,7 +3,10 @@ import {Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/route
 import { AuthService } from './services/auth.service';
 import { NgIf } from '@angular/common';
 import { User } from './models/auth.model';
-import { Subscription } from 'rxjs';
+import { registerLocaleData } from '@angular/common';
+import localePl from '@angular/common/locales/pl';
+
+registerLocaleData(localePl);
 
 @Component({
   selector: 'app-root',
@@ -11,21 +14,14 @@ import { Subscription } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   title = 'frontend';
   currentUser: User | null = null;
-  private subscription?: Subscription;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.subscription = this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
-  }
-
-  ngOnDestroy() {
-    this.subscription?.unsubscribe();
+    this.currentUser = this.authService.getCurrentUser();
   }
 
   logout() {

@@ -18,9 +18,9 @@
       [class.is-valid]="usernameInput.valid && (usernameInput.dirty || usernameInput.touched)"
     />
     <div *ngIf="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)" class="invalid-feedback">
-      <div *ngIf="usernameInput.errors?.['required']">Username is required.</div>
-      <div *ngIf="usernameInput.errors?.['minlength']">Username must be at least 4 characters.</div>
-      <div *ngIf="usernameInput.errors?.['pattern']">Username can contain only letters and numbers.</div>
+      <div *ngIf="usernameInput.errors?.['required']">Nazwa użytkownika jest wymagana.</div>
+      <div *ngIf="usernameInput.errors?.['minlength']">Nazwa użytkownika musi mieć co najmniej 4 znaki.</div>
+      <div *ngIf="usernameInput.errors?.['pattern']">Nazwa użytkownika może zawierać tylko litery i cyfry.</div>
     </div>
   </div>
 
@@ -39,13 +39,13 @@
       class="form-control"
       [class.is-invalid]="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
       [class.is-valid]="passwordInput.valid && (passwordInput.dirty || passwordInput.touched)"
-      title="Password must be at least 8 characters, include one uppercase letter, one number and one special character."
+      title="Hasło musi mieć co najmniej 8 znaków, zawierać jedną wielką literę, jedną cyfrę oraz jeden znak specjalny."
     />
     <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="invalid-feedback">
-      <div *ngIf="passwordInput.errors?.['required']">Password is required.</div>
-      <div *ngIf="passwordInput.errors?.['minlength']">Password must be at least 8 characters.</div>
+      <div *ngIf="passwordInput.errors?.['required']">Hasło jest wymagane.</div>
+      <div *ngIf="passwordInput.errors?.['minlength']">Hasło musi mieć co najmniej 8 znaków.</div>
       <div *ngIf="passwordInput.errors?.['pattern']">
-        Password must include uppercase letter, number, and special character.
+        Hasło musi zawierać wielką literę, cyfrę oraz znak specjalny.
       </div>
     </div>
   </div>

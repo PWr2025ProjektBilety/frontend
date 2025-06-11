@@ -23,11 +23,10 @@ import {FormsModule} from '@angular/forms';
 export class TicketsComponent implements OnInit {
   tickets: PurchasedTicketDTO[] = [];
   message: string | null = null;
-  isLoading: boolean = false;
   selectedTicket: PurchasedTicketDTO | null = null;
   selectedTicketDetails: PurchasedTicketDTO | null = null;
   vehicleIdInput: string = '';
-
+  messageTimeout: any;
   page = 0;
   size = 5;
   totalPages = 0;
@@ -39,18 +38,14 @@ export class TicketsComponent implements OnInit {
   }
 
   loadTickets() {
-    this.isLoading = true;
-
     this.ticketService.getTicketHistory(this.page, this.size).subscribe({
       next: (res) => {
         this.tickets = res.content;
         this.totalPages = res.totalPages;
-        this.isLoading = false;
         console.log(res)
       },
       error: (err) => {
         this.message = 'Nie udało się załadować historii biletów.';
-        this.isLoading = false;
         console.error(err);
       }
     });
@@ -66,6 +61,17 @@ export class TicketsComponent implements OnInit {
   nextPage() {
     if (this.page < this.totalPages - 1) {
       this.page++;
+      this.loadTickets();
+    }
+  }
+
+  get pages(): number[] {
+    return Array(this.totalPages).fill(0).map((_, i) => i);
+  }
+
+  goToPage(p: number) {
+    if (p >= 0 && p < this.totalPages) {
+      this.page = p;
       this.loadTickets();
     }
   }
@@ -86,7 +92,7 @@ export class TicketsComponent implements OnInit {
     const now = new Date();
 
     if (this.isSingle(ticket)) {
-      return ticket.validated ? 'bg-light-subtle' : 'bg-warning-subtle';
+      return ticket.validated ? 'bg-success-subtle' : 'bg-warning-subtle';
     }
 
     if (this.isTimeBased(ticket)) {
@@ -112,6 +118,26 @@ export class TicketsComponent implements OnInit {
     return 'bg-light';
   }
 
+  validateTicket() {
+    if (!this.selectedTicket || !this.vehicleIdInput.trim()) {
+      return;
+    }
+
+    this.ticketService.validateTicket(this.selectedTicket.code, this.vehicleIdInput.trim()).subscribe({
+      next: () => {
+        this.message = 'Bilet został skasowany.';
+        this.showMessage(this.message)
+        this.selectedTicket = null;
+        this.vehicleIdInput = '';
+        this.loadTickets();
+      },
+      error: err => {
+        this.message = 'Nie udało się skasować biletu.'
+        this.showMessage(this.message)
+        console.error(err);
+      }
+    });
+  }
 
   openValidationPopup(ticket: PurchasedTicketDTO) {
     this.selectedTicket = ticket;
@@ -122,8 +148,6 @@ export class TicketsComponent implements OnInit {
     this.selectedTicket = null;
     this.vehicleIdInput = '';
   }
-
-  messageTimeout: any;
 
   showMessage(msg: string) {
     this.message = msg;
@@ -146,27 +170,6 @@ export class TicketsComponent implements OnInit {
     }
   }
 
-  validateTicket() {
-    if (!this.selectedTicket || !this.vehicleIdInput.trim()) {
-      return;
-    }
-
-    this.ticketService.validateTicket(this.selectedTicket.code, this.vehicleIdInput.trim()).subscribe({
-      next: () => {
-        this.message = 'Bilet został skasowany.';
-        this.showMessage(this.message)
-        this.selectedTicket = null;
-        this.vehicleIdInput = '';
-        this.loadTickets();
-      },
-      error: err => {
-        this.message = 'Nie udało się skasować biletu.'
-        this.showMessage(this.message)
-        console.error(err);
-      }
-    });
-  }
-
   showDetails(ticket: any): void {
     this.selectedTicketDetails = ticket;
   }
@@ -174,6 +177,5 @@ export class TicketsComponent implements OnInit {
   closeDetails(): void {
     this.selectedTicketDetails = null;
   }
-
 
 }

@@ -21,7 +21,6 @@ export class BuyTicketComponent implements OnInit {
   ticket?: Ticket;
   reduced: boolean = false
   message: string | null = null;
-  isLoading: boolean = false;
   activationDate: string = this.getTodayAsDateString();
   minDate: string = this.getTodayAsDateString();
   maxDate: string = this.getMaxDateString(6);
@@ -39,7 +38,7 @@ export class BuyTicketComponent implements OnInit {
       if (storedTicket) {
         this.ticket = JSON.parse(storedTicket);
       } else {
-        alert('Brak danych biletu. Wracam do listy...');
+        alert('Brak danych biletu...');
         this.router.navigate(['/']);
       }
     }
@@ -64,7 +63,7 @@ export class BuyTicketComponent implements OnInit {
 
   closePopup() {
     this.message = null;
-    this.router.navigate(['/']);
+    this.router.navigate(['/offer']);
   }
 
   getTodayAsDateString(): string {
@@ -87,7 +86,6 @@ export class BuyTicketComponent implements OnInit {
   buy() {
     if (!this.ticket) return;
 
-    this.isLoading = true;
     this.message = null;
 
     const request: BuyTicketRequest = {
@@ -100,14 +98,12 @@ export class BuyTicketComponent implements OnInit {
     this.ticketService.buyTicket(request).subscribe({
       next: (res: PurchasedTicketDTO) => {
         this.message = `Kupiono bilet: kod ${res.code}, cena: ${res.finalPrice} zł`;
-        this.isLoading = false;
         console.log(res)
         console.log(request)
       },
       error: (err) => {
         this.message = 'Kupno biletu nie powiodło się.';
         console.error(err);
-        this.isLoading = false;
         console.log(request)
       }
     });

@@ -53,19 +53,18 @@
     </div>
 
 
-    <!-- Wyśrodkowane przyciski -->
+    <!-- Przyciski -->
     <div class="d-flex justify-content-center gap-3">
       <button
         class="btn btn-success btn-lg px-4"
         (click)="buy()"
-        [disabled]="isLoading || (ticket.type === 'PERIODIC_TICKET' && !activationDate)"
+        [disabled]="(ticket.type === 'PERIODIC_TICKET' && !activationDate)"
       >
         Kup
       </button>
       <button
         class="btn btn-secondary btn-lg px-4"
         (click)="cancel()"
-        [disabled]="isLoading"
       >
         Anuluj
       </button>
@@ -78,6 +77,7 @@
     </p>
   </ng-template>
 
+  <!-- Popup z wiadomością o kupionym bilecie -->
   <div
     *ngIf="message"
     class="popup-backdrop d-flex justify-content-center align-items-center"

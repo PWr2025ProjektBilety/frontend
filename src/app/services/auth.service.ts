@@ -53,10 +53,27 @@ export class AuthService {
     );
   }
 
-
   logout(): void {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
   }
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return false;
+
+    try {
+      const decoded: any = jwtDecode(token);
+      const now = Date.now() / 1000;
+      return decoded.exp && decoded.exp > now;
+    } catch (e) {
+      return false;
+    }
+  }
+
 }

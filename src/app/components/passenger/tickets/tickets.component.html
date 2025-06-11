@@ -1,26 +1,36 @@
 <div class="container">
   <h2 class="text-center mb-3">Historia zakupionych biletów</h2>
   <!-- Paginacja -->
-  <div *ngIf="totalPages > 1" class="d-flex justify-content-center mb-3">
-    <button class="btn btn-outline-primary me-2" (click)="previousPage()" [disabled]="page === 0">
-      Poprzednia
+  <div *ngIf="totalPages > 1" class="d-flex justify-content-center mb-3 align-items-center gap-2">
+
+    <!-- Strzałka wstecz -->
+    <button class="btn btn-outline-primary" (click)="previousPage()" [disabled]="page === 0" aria-label="Poprzednia strona">
+      <i class="bi bi-chevron-left"></i>
     </button>
-    <span class="align-self-center">Strona {{ page + 1 }} z {{ totalPages }}</span>
-    <button class="btn btn-outline-primary ms-2" (click)="nextPage()" [disabled]="page === totalPages - 1">
-      Następna
+
+    <!-- Przycisk numeru strony -->
+    <ng-container *ngFor="let p of pages">
+      <button
+        class="btn"
+        [ngClass]="{'btn-primary': p === page, 'btn-outline-primary': p !== page}"
+        (click)="goToPage(p)">
+        {{ p + 1 }}
+      </button>
+    </ng-container>
+
+    <!-- Strzałka naprzód -->
+    <button class="btn btn-outline-primary" (click)="nextPage()" [disabled]="page === totalPages - 1" aria-label="Następna strona">
+      <i class="bi bi-chevron-right"></i>
     </button>
+
   </div>
 
   <!-- Lista biletów -->
-  <div *ngIf="isLoading" class="text-center">
-    <div class="spinner-border text-primary" role="status"></div>
-  </div>
-
-  <div *ngIf="!isLoading && tickets.length === 0" class="text-center">
+  <div *ngIf="tickets.length === 0" class="text-center">
     <p>Brak zakupionych biletów.</p>
   </div>
 
-  <ul *ngIf="!isLoading && tickets.length > 0" class="list-group">
+  <ul *ngIf="tickets.length > 0" class="list-group">
     <li
       *ngFor="let ticket of tickets"
       class="list-group-item d-flex justify-content-between align-items-start flex-column flex-md-row"
@@ -32,7 +42,7 @@
           <span *ngIf="isTimeBased(ticket)">Czasowy</span>
           <span *ngIf="isPeriodic(ticket)">Okresowy</span>
         </h5>
-        <p class="mb-1"><strong>Data zakupu:</strong> {{ ticket.purchaseDate | date: 'medium' }}</p>
+        <p class="mb-1"><strong>Data zakupu:</strong> {{ ticket.purchaseDate | date: 'yyyy-MM-dd HH:mm' }}</p>
         <p class="mb-1"><strong>Kod:</strong> {{ ticket.code }}</p>
       </div>
       <div class="mt-3 mt-md-0 d-flex flex-column flex-md-row gap-2 justify-content-md-end align-items-center">
@@ -50,6 +60,51 @@
 
     </li>
   </ul>
+
+  <!-- Modal Szczegółów -->
+  <div
+    *ngIf="selectedTicketDetails"
+    class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 z-3"
+  >
+    <div class="bg-white p-4 rounded shadow" style="max-width: 500px; width: 90%;">
+      <h5 class="mb-3">Szczegóły biletu</h5>
+      <p><strong>Kod:</strong> {{ selectedTicketDetails.code }}</p>
+      <p><strong>Data zakupu:</strong> {{ selectedTicketDetails.purchaseDate | date: 'yyyy-MM-dd HH:mm'  }}</p>
+      <p><strong>Cena:</strong> {{ selectedTicketDetails.finalPrice }} zł</p>
+      <p><strong>Ulgowy:</strong> {{ selectedTicketDetails.reduced ? 'Tak' : 'Nie' }}</p>
+
+      <ng-container *ngIf="isSingle(selectedTicketDetails)">
+        <p><strong>Typ:</strong> Jednorazowy</p>
+        <p><strong>Skasowany:</strong> {{ selectedTicketDetails.validated ? 'Tak' : 'Nie' }}</p>
+        <p><strong>Pojazd:</strong> {{ selectedTicketDetails.vehicleId || 'Brak danych' }}</p>
+      </ng-container>
+
+      <ng-container *ngIf="isTimeBased(selectedTicketDetails)">
+        <p><strong>Typ:</strong> Czasowy</p>
+        <p><strong>Skasowany:</strong> {{ selectedTicketDetails.validated ? 'Tak' : 'Nie' }}</p>
+        <p><strong>Data walidacji:</strong> {{ selectedTicketDetails.validationDate | date: 'yyyy-MM-dd HH:mm' }}</p>
+        <p><strong>Ważny do:</strong> {{ selectedTicketDetails.expirationDate | date: 'yyyy-MM-dd HH:mm' }}</p>
+      </ng-container>
+
+      <ng-container *ngIf="isPeriodic(selectedTicketDetails)">
+        <p><strong>Typ:</strong> Okresowy</p>
+        <p><strong>Ważny od:</strong> {{ selectedTicketDetails.validFrom | date: 'yyyy-MM-dd' }}</p>
+        <p><strong>Ważny do:</strong> {{ selectedTicketDetails.validTo | date: 'yyyy-MM-dd' }}</p>
+      </ng-container>
+
+      <div class="d-flex justify-content-end gap-2">
+        <button
+          *ngIf="(isSingle(selectedTicketDetails) && !selectedTicketDetails.validated || isTimeBased(selectedTicketDetails) && !selectedTicketDetails.validated)"
+          class="btn btn-outline-primary"
+          (click)="openValidationPopup(selectedTicketDetails); closeDetails()"
+        >
+          Skasuj bilet
+        </button>
+        <button class="btn btn-secondary" (click)="closeDetails()">Zamknij</button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Popup do kasowania biletu-->
   <div
@@ -78,48 +133,5 @@
     </div>
   </div>
 
-  <!-- Modal Szczegółów -->
-  <div
-    *ngIf="selectedTicketDetails"
-    class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 z-3"
-  >
-    <div class="bg-white p-4 rounded shadow" style="max-width: 500px; width: 90%;">
-      <h5 class="mb-3">Szczegóły biletu</h5>
-      <p><strong>Kod:</strong> {{ selectedTicketDetails.code }}</p>
-      <p><strong>Data zakupu:</strong> {{ selectedTicketDetails.purchaseDate | date:'medium' }}</p>
-      <p><strong>Cena:</strong> {{ selectedTicketDetails.finalPrice }} zł</p>
-      <p><strong>Ulgowy:</strong> {{ selectedTicketDetails.reduced ? 'Tak' : 'Nie' }}</p>
-
-      <ng-container *ngIf="isSingle(selectedTicketDetails)">
-        <p><strong>Typ:</strong> Jednorazowy</p>
-        <p><strong>Skasowany:</strong> {{ selectedTicketDetails.validated ? 'Tak' : 'Nie' }}</p>
-        <p><strong>Pojazd:</strong> {{ selectedTicketDetails.vehicleId || 'Brak danych' }}</p>
-      </ng-container>
-
-      <ng-container *ngIf="isTimeBased(selectedTicketDetails)">
-        <p><strong>Typ:</strong> Czasowy</p>
-        <p><strong>Skasowany:</strong> {{ selectedTicketDetails.validated ? 'Tak' : 'Nie' }}</p>
-        <p><strong>Data walidacji:</strong> {{ selectedTicketDetails.validationDate | date: 'short' }}</p>
-        <p><strong>Ważny do:</strong> {{ selectedTicketDetails.expirationDate | date: 'short' }}</p>
-      </ng-container>
-
-      <ng-container *ngIf="isPeriodic(selectedTicketDetails)">
-        <p><strong>Typ:</strong> Okresowy</p>
-        <p><strong>Ważny od:</strong> {{ selectedTicketDetails.validFrom | date: 'shortDate' }}</p>
-        <p><strong>Ważny do:</strong> {{ selectedTicketDetails.validTo | date: 'shortDate' }}</p>
-      </ng-container>
-
-      <div class="d-flex justify-content-end gap-2">
-        <button
-          *ngIf="(isSingle(selectedTicketDetails) && !selectedTicketDetails.validated || isTimeBased(selectedTicketDetails) && !selectedTicketDetails.validated)"
-          class="btn btn-outline-primary"
-          (click)="openValidationPopup(selectedTicketDetails); closeDetails()"
-        >
-          Skasuj bilet
-        </button>
-        <button class="btn btn-secondary" (click)="closeDetails()">Zamknij</button>
-      </div>
-    </div>
-  </div>
 
 </div>

@@ -22,10 +22,10 @@ export class RegisterComponent {
 
   onSubmit(form: NgForm) {
     this.userService.register({ username: this.username, password: this.password }).subscribe({
-      next: (res) => {this.message = res
+      next: (res) => {this.message = "Rejestracja przebiegła pomyślnie."
       console.log(res)
       form.reset()},
-      error: (err) => {this.message = err.error || 'Registration failed'
+      error: (err) => {this.message = "Rejestracja nie udała się."
         console.log(err)
       },
     });
