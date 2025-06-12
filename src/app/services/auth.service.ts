@@ -1,19 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {BehaviorSubject, Observable, tap} from 'rxjs';
-import {User, JwtPayload} from '../models/auth.model';
+import {User, JwtPayload, Request} from '../models/auth.model';
 import {jwtDecode} from 'jwt-decode';
 import {Router} from '@angular/router';
 
-interface RegisterRequest {
-  username: string;
-  password: string;
-}
-
-interface LoginRequest {
-  username: string;
-  password: string;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -30,11 +21,11 @@ export class AuthService {
     }
   }
 
-  register(request: RegisterRequest): Observable<string> {
+  register(request: Request): Observable<string> {
     return this.http.post(`${this.apiUrl}/register`, request, { responseType: 'text' });
   }
 
-  login(request: LoginRequest): Observable<string> {
+  login(request: Request): Observable<string> {
     return this.http.post(`${this.apiUrl}/login`, request, { responseType: 'text' }).pipe(
       tap(token => {
         sessionStorage.setItem('jwtToken', token);

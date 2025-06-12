@@ -10,3 +10,8 @@ export interface JwtPayload {
   exp?: number;
 }
 
+export interface Request {
+  username: string;
+  password: string;
+}
+
