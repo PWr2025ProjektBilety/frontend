@@ -7,6 +7,8 @@
       type="text"
       id="loginUsername"
       name="username"
+      required
+      maxlength="20"
       [(ngModel)]="username"
       (ngModelChange)="clearMessage()"
       placeholder="Wpisz nazwę użytkownika..."
@@ -21,6 +23,8 @@
       type="password"
       id="loginPassword"
       name="password"
+      required
+      maxlength="30"
       [(ngModel)]="password"
       (ngModelChange)="clearMessage()"
       placeholder="Wpisz hasło..."

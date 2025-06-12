@@ -12,6 +12,7 @@
       #usernameInput="ngModel"
       required
       minlength="4"
+      maxlength="20"
       pattern="^[a-zA-Z0-9]+$"
       placeholder="Wpisz nazwę użytkownika..."
       class="form-control"
@@ -36,6 +37,7 @@
       #passwordInput="ngModel"
       required
       minlength="8"
+      maxlength="30"
       pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
       placeholder="Wpisz hasło..."
       class="form-control"

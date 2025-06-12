@@ -1,15 +1,14 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TicketOfferComponent} from './ticket-offer.component';
-import {TicketService} from '../../../services/ticket.service';
-import {Router} from '@angular/router';
-import {of} from 'rxjs';
-import {Ticket, TicketType} from '../../../models/ticket.model';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TicketOfferComponent } from './ticket-offer.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of } from 'rxjs';
+import { Ticket, TicketType } from '../../../models/ticket.model';
 
 describe('TicketOfferComponent', () => {
   let component: TicketOfferComponent;
   let fixture: ComponentFixture<TicketOfferComponent>;
-  let ticketServiceMock: any;
   let routerMock: any;
+  let activatedRouteMock: any;
 
   const mockTickets: Ticket[] = [
     { id: 1, type: TicketType.SINGLE_RIDE_TICKET, price: 10, validityPeriod: 90, discountAvailable: true, active: true },
@@ -18,8 +17,8 @@ describe('TicketOfferComponent', () => {
   ];
 
   beforeEach(async () => {
-    ticketServiceMock = {
-      getAllTickets: jasmine.createSpy('getAllTickets').and.returnValue(of(mockTickets))
+    activatedRouteMock = {
+      data: of({ ticketData: mockTickets })  // symulujemy resolver data
     };
 
     routerMock = {
@@ -29,7 +28,7 @@ describe('TicketOfferComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TicketOfferComponent],
       providers: [
-        { provide: TicketService, useValue: ticketServiceMock },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: Router, useValue: routerMock }
       ]
     }).compileComponents();
@@ -45,17 +44,16 @@ describe('TicketOfferComponent', () => {
   it('should load tickets and split them by type on init', () => {
     component.ngOnInit();
 
-    expect(ticketServiceMock.getAllTickets).toHaveBeenCalled();
     expect(component.tickets.length).toBe(3);
 
     expect(component.singleRideTickets.length).toBe(1);
-    expect(component.singleRideTickets[0].type).toBe('SINGLE_RIDE_TICKET');
+    expect(component.singleRideTickets[0].type).toBe(TicketType.SINGLE_RIDE_TICKET);
 
     expect(component.timeBasedTickets.length).toBe(1);
-    expect(component.timeBasedTickets[0].type).toBe('TIME_BASED_TICKET');
+    expect(component.timeBasedTickets[0].type).toBe(TicketType.TIME_BASED_TICKET);
 
     expect(component.periodicTickets.length).toBe(1);
-    expect(component.periodicTickets[0].type).toBe('PERIODIC_TICKET');
+    expect(component.periodicTickets[0].type).toBe(TicketType.PERIODIC_TICKET);
   });
 
   it('should store selected ticket and navigate on goToBuyTicket', () => {

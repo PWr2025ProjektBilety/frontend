@@ -119,8 +119,16 @@
         class="form-control mb-3"
         [(ngModel)]="vehicleIdInput"
         placeholder="Np. 123"
+        maxlength="6"
+        required
       />
-      <button class="btn btn-success me-2" (click)="validateTicket()">Potwierdź</button>
+      <button
+        class="btn btn-success me-2"
+        (click)="validateTicket()"
+        [disabled]="!vehicleIdInput || vehicleIdInput.trim().length === 0"
+      >
+        Potwierdź
+      </button>
       <button class="btn btn-secondary" (click)="cancelValidation()">Anuluj</button>
     </div>
   </div>

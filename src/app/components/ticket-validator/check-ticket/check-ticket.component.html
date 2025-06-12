@@ -4,12 +4,23 @@
   <div class="card shadow-sm p-4 mx-auto" style="max-width: 400px;">
     <div class="mb-3">
       <label for="ticketCode" class="form-label">Kod biletu</label>
-      <input id="ticketCode" class="form-control" [(ngModel)]="ticketCode" placeholder="Np. 1749372583580-GTT8" />
+      <input
+        id="ticketCode"
+        class="form-control"
+        [(ngModel)]="ticketCode" placeholder="Np. 1749372583580-GTT8"
+        maxlength="30"
+      />
     </div>
 
     <div class="mb-3">
       <label for="vehicleId" class="form-label">Numer pojazdu</label>
-      <input id="vehicleId" class="form-control" [(ngModel)]="vehicleId" placeholder="Np. 123" />
+      <input
+        id="vehicleId"
+        class="form-control"
+        [(ngModel)]="vehicleId"
+        placeholder="Np. 123"
+        maxlength="6"
+      />
     </div>
 
     <button

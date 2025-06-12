@@ -9,6 +9,7 @@ import {TicketResolver} from './resolvers/tickets.resolver';
 import {BuyTicketComponent} from './components/passenger/buy-ticket/buy-ticket.component';
 import {AuthGuard} from './guards/auth.guard';
 import {NoAuthGuard} from './guards/noAuth.guard';
+import {TicketHistoryResolver} from './resolvers/ticket.history.resolver';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -17,13 +18,14 @@ export const routes: Routes = [
   {
     path: 'tickets',
     component: TicketsComponent,
+    resolve: { ticketData: TicketHistoryResolver },
     canActivate: [AuthGuard],
     data: { role: 'ROLE_USER' }
   },
   {
     path: 'offer',
     component: TicketOfferComponent,
-    resolve: { tickets: TicketResolver },
+    resolve: { ticketData: TicketResolver },
     canActivate: [AuthGuard],
     data: { role: 'ROLE_USER'}
   },
