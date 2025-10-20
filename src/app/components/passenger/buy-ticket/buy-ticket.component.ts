@@ -26,7 +26,6 @@ export class BuyTicketComponent {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
     private ticketService: TicketService
   ) {
     const navigation = this.router.getCurrentNavigation();

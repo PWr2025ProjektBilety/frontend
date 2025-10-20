@@ -8,7 +8,7 @@ import {Page} from '../models/page.model';
   providedIn: 'root',
 })
 export class TicketService {
-  private readonly BASE_URL = 'http://localhost:8080/api';
+  private readonly BASE_URL = '/api';
   private readonly TICKETS_URL = `${this.BASE_URL}/tickets`;
   private readonly PURCHASED_URL = `${this.BASE_URL}/boughttickets`;
   private readonly INSPECTION_URL = `${this.BASE_URL}/ticket-inspection`;
