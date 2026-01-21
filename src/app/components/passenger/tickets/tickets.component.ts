@@ -1,3 +1,4 @@
+import { QRCodeSVG } from '@akamfoad/qrcode';
 import {Component, OnInit} from '@angular/core';
 import {
   PurchasedTicketDTO, PurchasedTicketPeriodicDTO,
@@ -33,6 +34,11 @@ export class TicketsComponent implements OnInit {
   totalPages = 0;
 
   constructor(private ticketService: TicketService, private route: ActivatedRoute) {}
+
+  getCodeDataUrl(code: string): string {
+    const qrCode = new QRCodeSVG(code, { level: 'H' });
+    return qrCode.toDataUrl()!;
+  }
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => {

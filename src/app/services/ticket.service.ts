@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Page} from '../models/page.model';
 
+export interface InspectTicketResponse {
+  status: 'valid' | 'invalid';
+  reason: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -71,6 +76,14 @@ export class TicketService {
     const body = { ticketCode: ticketCode.trim(), vehicleId: vehicleId.trim() };
 
     return this.http.post<boolean>(this.INSPECTION_URL, body, { headers });
+  }
+
+  inspectTicket(code: string, vehicleId: string): Observable<InspectTicketResponse> {
+    const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
+
+    const body = { vehicleId: vehicleId.trim() };
+
+    return this.http.post<InspectTicketResponse>(`${this.TICKETS_URL}/${encodeURIComponent(code.trim())}/inspect`, body, { headers });
   }
 
 }

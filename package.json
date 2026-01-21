@@ -11,6 +11,7 @@
   },
   "private": true,
   "dependencies": {
+    "@akamfoad/qrcode": "github:akamfoad/qrcode",
     "@angular/common": "^19.2.0",
     "@angular/compiler": "^19.2.0",
     "@angular/core": "^19.2.0",
@@ -20,6 +21,7 @@
     "@angular/router": "^19.2.0",
     "bootstrap": "^5.3.6",
     "jwt-decode": "^4.0.0",
+    "qr-scanner": "^1.4.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
