@@ -32,6 +32,9 @@ export class CheckTicketComponent {
   private scanner!: QrScanner;
   private lastCode: string | null = null;
   private inspecting = false;
+  protected scannerActive = false;
+  protected startingScanner = false;
+  private readonly scanCooldownMs = 1200;
 
   constructor(private ticketService: TicketService) {}
 
@@ -41,10 +44,19 @@ export class CheckTicketComponent {
       import.meta.url,
     ).toString();
 
+    this.video.nativeElement.playsInline = true;
+    this.video.nativeElement.muted = true;
+
     this.scanner = new QrScanner(
       this.video.nativeElement,
       ({ data }) => this.onCodeScanned(data),
-      { returnDetailedScanResult: true },
+      {
+        returnDetailedScanResult: true,
+        preferredCamera: 'environment',
+        highlightScanRegion: true,
+        highlightCodeOutline: true,
+        maxScansPerSecond: 12,
+      },
     );
 
     this.updateScannerState();
@@ -68,16 +80,65 @@ export class CheckTicketComponent {
 
     if (!hasVehicle) {
       if (this.scanner) this.scanner.stop();
+      this.scannerActive = false;
       this.resultMessage = 'Wpisz numer pojazdu, aby uruchomić skaner.';
       this.resultType = 'warning';
       return;
     }
 
-    if (this.scanner) this.scanner.start();
-    if (!this.resultMessage) {
-      this.resultMessage = 'Oczekiwanie na skan...';
+    if (!this.scannerActive && !this.resultMessage) {
+      this.resultMessage = 'Naciśnij „Uruchom kamerę”, aby rozpocząć skanowanie.';
       this.resultType = 'info';
     }
+  }
+
+  protected async startScanner(): Promise<void> {
+    if (this.startingScanner) return;
+
+    const hasVehicle = !!this.vehicleId?.trim();
+    if (!hasVehicle) {
+      this.resultMessage = 'Wpisz numer pojazdu, aby uruchomić skaner.';
+      this.resultType = 'warning';
+      return;
+    }
+
+    if (!window.isSecureContext) {
+      this.resultMessage = 'Kamera wymaga HTTPS (bezpiecznego połączenia). Otwórz stronę przez https:// lub localhost.';
+      this.resultType = 'danger';
+      return;
+    }
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.resultMessage = 'Ta przeglądarka nie obsługuje dostępu do kamery (getUserMedia).';
+      this.resultType = 'danger';
+      return;
+    }
+
+    this.startingScanner = true;
+    this.resultMessage = 'Uruchamianie kamery...';
+    this.resultType = 'info';
+
+    try {
+      await this.scanner.start();
+      // Prefer back camera if the library supports it.
+      (this.scanner as unknown as { setCamera?: (c: string) => Promise<void> | void }).setCamera?.('environment');
+      this.scannerActive = true;
+      this.resultMessage = 'Oczekiwanie na skan...';
+      this.resultType = 'info';
+    } catch (e: unknown) {
+      this.scannerActive = false;
+      const msg = e instanceof Error ? e.message : String(e);
+      this.resultMessage = `Nie udało się uruchomić kamery: ${msg}`;
+      this.resultType = 'danger';
+    } finally {
+      this.startingScanner = false;
+    }
+  }
+
+  protected stopScanner(): void {
+    if (this.scanner) this.scanner.stop();
+    this.scannerActive = false;
+    this.updateScannerState();
   }
 
   private onCodeScanned(code: string): void {
@@ -89,6 +150,9 @@ export class CheckTicketComponent {
 
     this.lastCode = trimmed;
     this.inspecting = true;
+    // Pause scanning while we validate/inspect, so we don't keep decoding frames.
+    if (this.scanner) this.scanner.stop();
+    this.scannerActive = false;
 
     this.resultMessage = 'Sprawdzanie biletu...';
     this.resultType = 'info';
@@ -98,9 +162,19 @@ export class CheckTicketComponent {
       .pipe(
         finalize(() => {
           this.inspecting = false;
-          setTimeout(() => {
+          setTimeout(async () => {
             if (this.lastCode === trimmed) this.lastCode = null;
-          }, 250);
+            // Auto-resume scanning after a short cooldown, if vehicleId is still present.
+            if (!this.vehicleId?.trim()) return;
+            if (!this.scanner) return;
+            try {
+              await this.scanner.start();
+              this.scannerActive = true;
+            } catch {
+              // Ignore resume errors; user can try starting again.
+              this.scannerActive = false;
+            }
+          }, this.scanCooldownMs);
         }),
       )
       .subscribe({

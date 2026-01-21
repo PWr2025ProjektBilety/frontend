@@ -13,7 +13,26 @@
     </div>
 
     <div class="scanner">
-      <video #video></video>
+      <video #video playsinline autoplay muted></video>
+    </div>
+
+    <div class="d-grid gap-2 mt-3">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="startScanner()"
+        [disabled]="startingScanner || !vehicleId?.trim()"
+      >
+        Uruchom kamerę
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="stopScanner()"
+        [disabled]="!scannerActive"
+      >
+        Zatrzymaj
+      </button>
     </div>
 
     <div class="mt-3">
@@ -26,7 +45,7 @@
         placeholder="Np. 123"
         maxlength="6"
       />
-      <div class="form-text">Po wpisaniu numeru pojazdu skaner uruchomi kamerę.</div>
+      <div class="form-text">Po wpisaniu numeru pojazdu możesz uruchomić kamerę.</div>
     </div>
   </div>
 </div>
