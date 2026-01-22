@@ -22,6 +22,7 @@ export interface BuyTicketRequest {
 
 export interface PurchasedTicketDTO {
   code: string;
+  qrPayload: string;
   finalPrice: number;
   reduced: boolean;
   purchaseDate: string;

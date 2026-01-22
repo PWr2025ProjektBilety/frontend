@@ -69,7 +69,7 @@
     <div class="bg-white p-4 rounded shadow" style="max-width: 500px; width: 90%;">
       <h5 class="mb-3">Szczegóły biletu</h5>
       <div class="d-flex justify-content-center mb-3">
-        <img [src]="getCodeDataUrl(selectedTicketDetails.code)" alt="QR" style="width: 220px; height: 220px;" />
+        <img [src]="getCodeDataUrl(getTicketQrPayload(selectedTicketDetails))" alt="QR" style="width: 220px; height: 220px;" />
       </div>
       <p><strong>Kod:</strong> {{ selectedTicketDetails.code }}</p>
       <p><strong>Data zakupu:</strong> {{ selectedTicketDetails.purchaseDate | date: 'yyyy-MM-dd HH:mm'  }}</p>

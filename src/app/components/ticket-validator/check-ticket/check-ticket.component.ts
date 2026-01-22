@@ -186,6 +186,9 @@ export class CheckTicketComponent {
           }
 
           switch (res.reason) {
+            case 'invalid-qr':
+              this.resultMessage = 'Nieprawidłowy kod QR (błędny podpis).';
+              break;
             case 'ticket-not-found':
               this.resultMessage = 'Nie znaleziono biletu.';
               break;

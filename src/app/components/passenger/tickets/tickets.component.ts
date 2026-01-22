@@ -35,9 +35,13 @@ export class TicketsComponent implements OnInit {
 
   constructor(private ticketService: TicketService, private route: ActivatedRoute) {}
 
-  getCodeDataUrl(code: string): string {
-    const qrCode = new QRCodeSVG(code, { level: 'H' });
+  getCodeDataUrl(payload: string): string {
+    const qrCode = new QRCodeSVG(payload, { level: 'H' });
     return qrCode.toDataUrl()!;
+  }
+
+  getTicketQrPayload(ticket: PurchasedTicketDTO): string {
+    return (ticket as any).qrPayload || ticket.code;
   }
 
   ngOnInit(): void {
