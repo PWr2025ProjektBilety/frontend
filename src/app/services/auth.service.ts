@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {BehaviorSubject, Observable, tap} from 'rxjs';
 import {User, JwtPayload, Request} from '../models/auth.model';
 import {jwtDecode} from 'jwt-decode';
@@ -31,7 +31,7 @@ export class AuthService {
         sessionStorage.setItem('jwtToken', token);
 
         const decoded = jwtDecode<JwtPayload>(token);
-
+        console.log(decoded);
         const user: User = {
           username: decoded.sub,
           role: decoded.roles[0]
@@ -82,4 +82,30 @@ export class AuthService {
     return this.getCurrentUser()?.role == 'ROLE_INSPECTOR';
   }
 
+  get isAdmin(): boolean {
+    return this.getCurrentUser()?.role === 'ROLE_ADMIN';
+  }
+
+
+  private getAuthHeaders() {
+    const token = sessionStorage.getItem('jwtToken');
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+  }
+
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/all`, this.getAuthHeaders());
+  }
+
+  changeUserRole(userId: number, targetRole: string): Observable<string> {
+    const url = `${this.apiUrl}/${userId}/role?targetRole=${targetRole}`;
+
+    return this.http.patch(url, {}, {
+      ...this.getAuthHeaders(),
+      responseType: 'text'
+    });
+  }
 }

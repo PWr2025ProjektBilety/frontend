@@ -32,6 +32,16 @@
               Sprawdź bilet
             </a>
           </li>
+          <li *ngIf="authService.isLoggedIn && authService.isAdmin" class="nav-item">
+            <a class="nav-link text-white" routerLink="/manage-users" routerLinkActive="active-link">
+              Zarządzaj rolami
+            </a>
+          </li>
+          <li *ngIf="authService.isLoggedIn && authService.isAdmin" class="nav-item">
+            <a class="nav-link text-white" routerLink="/manage-tickets" routerLinkActive="active-link">
+              Zarządzaj ofertą
+            </a>
+          </li>
           <li *ngIf="authService.isLoggedIn" class="nav-item">
             <a class="nav-link text-white" href="#" (click)="authService.logout()">
               Wyloguj się

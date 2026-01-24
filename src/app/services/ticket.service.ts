@@ -73,4 +73,22 @@ export class TicketService {
     return this.http.post<boolean>(this.INSPECTION_URL, body, { headers });
   }
 
+  getAllTicketsForAdmin(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.TICKETS_URL}/all`, {
+      headers: this.getAuthHeaders(), // <-- TO MUSI TU BYĆ
+    });
+  }
+
+  createTicket(ticket: Ticket): Observable<Ticket> {
+    return this.http.post<Ticket>(this.TICKETS_URL, ticket, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  deleteTicket(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.TICKETS_URL}/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
 }
