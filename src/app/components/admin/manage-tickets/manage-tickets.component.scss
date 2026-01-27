@@ -1,0 +1,42 @@
+.transition-all { transition: all 0.3s ease; }
+
+.badge-btn {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  &:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+}
+
+.btn-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  &:hover { transform: rotate(15deg); }
+}
+
+.icon-box {
+  font-size: 1.5rem;
+  width: 40px;
+  text-align: center;
+}
+
+.custom-switch .form-check-input {
+  width: 3rem;
+  height: 1.5rem;
+  cursor: pointer;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.03) !important;
+}
+
+.bg-light.opacity-75 {
+  filter: grayscale(0.6);
+}

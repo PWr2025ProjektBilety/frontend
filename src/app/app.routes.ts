@@ -10,6 +10,8 @@ import {BuyTicketComponent} from './components/passenger/buy-ticket/buy-ticket.c
 import {AuthGuard} from './guards/auth.guard';
 import {NoAuthGuard} from './guards/noAuth.guard';
 import {TicketHistoryResolver} from './resolvers/ticket.history.resolver';
+import {ManageUsersComponent} from './components/admin/manage-users/manage-users.component';
+import {ManageTicketsComponent} from './components/admin/manage-tickets/manage-tickets.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -40,5 +42,17 @@ export const routes: Routes = [
     component: CheckTicketComponent,
     canActivate: [AuthGuard],
     data: {role: 'ROLE_INSPECTOR'}
+  },
+  {
+    path: 'manage-users',
+    component: ManageUsersComponent,
+    canActivate: [AuthGuard],
+    data: { role: 'ROLE_ADMIN' }
+  },
+  {
+    path: 'manage-tickets',
+    component: ManageTicketsComponent,
+    canActivate: [AuthGuard],
+    data: { role: 'ROLE_ADMIN' }
   }
 ];

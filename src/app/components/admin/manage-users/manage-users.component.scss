@@ -1,0 +1,30 @@
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px; /* Lekko zaokrąglony kwadrat wygląda nowocześniej niż koło */
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(37, 117, 252, 0.03) !important;
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+.rounded-start-pill {
+  border-top-left-radius: 50rem !important;
+  border-bottom-left-radius: 50rem !important;
+}
+
+.rounded-end-pill {
+  border-top-right-radius: 50rem !important;
+  border-bottom-right-radius: 50rem !important;
+}

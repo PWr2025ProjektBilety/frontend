@@ -3,6 +3,13 @@ import {BuyTicketRequest, PurchasedTicketDTO, Ticket, TicketValidationRequest} f
 import { Observable } from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Page} from '../models/page.model';
+import { BonusService } from './bonus.service';
+import { tap } from 'rxjs/operators';
+
+export interface InspectTicketResponse {
+  status: 'valid' | 'invalid';
+  reason: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +20,7 @@ export class TicketService {
   private readonly PURCHASED_URL = `${this.BASE_URL}/boughttickets`;
   private readonly INSPECTION_URL = `${this.BASE_URL}/ticket-inspection`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private bonusService: BonusService) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('jwtToken') || '';
@@ -33,6 +40,10 @@ export class TicketService {
       `${this.PURCHASED_URL}/buy`,
       request,
       { headers: this.getAuthHeaders() }
+    ).pipe(
+      tap(() => {
+        this.bonusService.notifyPointsChanged();
+      })
     );
   }
 
@@ -71,6 +82,32 @@ export class TicketService {
     const body = { ticketCode: ticketCode.trim(), vehicleId: vehicleId.trim() };
 
     return this.http.post<boolean>(this.INSPECTION_URL, body, { headers });
+  }
+
+  getAllTicketsForAdmin(): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.TICKETS_URL}/all`, {
+      headers: this.getAuthHeaders(), // <-- TO MUSI TU BYĆ
+    });
+  }
+
+  createTicket(ticket: Ticket): Observable<Ticket> {
+    return this.http.post<Ticket>(this.TICKETS_URL, ticket, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  deleteTicket(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.TICKETS_URL}/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  inspectTicket(code: string, vehicleId: string): Observable<InspectTicketResponse> {
+    const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
+
+    const body = { vehicleId: vehicleId.trim() };
+
+    return this.http.post<InspectTicketResponse>(`${this.TICKETS_URL}/${encodeURIComponent(code.trim())}/inspect`, body, { headers });
   }
 
 }

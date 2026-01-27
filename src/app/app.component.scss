@@ -24,4 +24,31 @@ body {
   padding-top: 80px;
 }
 
+// Bonus points styling
+.points-container {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+}
 
+.points-text {
+  color: white;
+  font-weight: 500;
+  display: inline;
+  
+  @media (max-width: 767.98px) {
+    display: none;
+  }
+}
+
+.points-icon {
+  color: white;
+  font-weight: 500;
+  display: none;
+  
+  @media (max-width: 767.98px) {
+    display: inline;
+  }
+}

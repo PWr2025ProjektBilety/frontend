@@ -22,6 +22,10 @@
               Moje bilety
             </a>
           </li>
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item points-container">
+            <span class="points-text">{{ pointsBalance }} points</span>
+            <span class="points-icon">⭐ {{ pointsBalance }}</span>
+          </li>
           <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
             <a class="nav-link text-white" routerLink="/offer" routerLinkActive="active-link">
               Oferty biletowe
@@ -30,6 +34,16 @@
           <li *ngIf="authService.isLoggedIn && authService.isController" class="nav-item">
             <a class="nav-link text-white" routerLink="/check-ticket" routerLinkActive="active-link">
               Sprawdź bilet
+            </a>
+          </li>
+          <li *ngIf="authService.isLoggedIn && authService.isAdmin" class="nav-item">
+            <a class="nav-link text-white" routerLink="/manage-users" routerLinkActive="active-link">
+              Zarządzaj rolami
+            </a>
+          </li>
+          <li *ngIf="authService.isLoggedIn && authService.isAdmin" class="nav-item">
+            <a class="nav-link text-white" routerLink="/manage-tickets" routerLinkActive="active-link">
+              Zarządzaj ofertą
             </a>
           </li>
           <li *ngIf="authService.isLoggedIn" class="nav-item">
