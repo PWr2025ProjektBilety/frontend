@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
 import QrScanner from 'qr-scanner';
 
-import { finalize } from 'rxjs';
+import { finalize, interval, Subscription } from 'rxjs';
 
 import { TicketService } from '../../../services/ticket.service';
 
@@ -25,11 +25,20 @@ import { TicketService } from '../../../services/ticket.service';
 })
 export class CheckTicketComponent {
   vehicleId = '';
+  manualTicketCode = '';
+  manualChecking = false;
+
+  lockDurationMinutes = 20;
+  vehicleLocked = false;
+  lockRemainingSeconds = 0;
+  lockLoading = false;
+  private lockStatusSub: Subscription | null = null;
+
   resultMessage = '';
   resultType = '';
 
   @ViewChild('video') protected video!: ElementRef<HTMLVideoElement>;
-  private scanner!: QrScanner;
+  private scanner: QrScanner | null = null;
   private lastCode: string | null = null;
   private inspecting = false;
   protected scannerActive = false;
@@ -39,47 +48,159 @@ export class CheckTicketComponent {
   constructor(private ticketService: TicketService) {}
 
   ngAfterViewInit(): void {
-    QrScanner.WORKER_PATH = new URL(
-      'qr-scanner/qr-scanner-worker.min.js',
-      import.meta.url,
-    ).toString();
-
     this.video.nativeElement.playsInline = true;
     this.video.nativeElement.muted = true;
-
-    this.scanner = new QrScanner(
-      this.video.nativeElement,
-      ({ data }) => this.onCodeScanned(data),
-      {
-        returnDetailedScanResult: true,
-        preferredCamera: 'environment',
-        highlightScanRegion: true,
-        highlightCodeOutline: true,
-        maxScansPerSecond: 12,
-      },
-    );
-
     this.updateScannerState();
   }
 
   ngOnDestroy(): void {
-    if (this.scanner) {
-      this.scanner.stop();
-      this.scanner.destroy();
+    if (this.lockStatusSub) {
+      this.lockStatusSub.unsubscribe();
+      this.lockStatusSub = null;
     }
+    this.scanner?.stop();
+    this.scanner?.destroy();
+    this.scanner = null;
   }
 
   protected onVehicleIdChange(): void {
     this.lastCode = null;
     this.resultMessage = '';
     this.updateScannerState();
+
+    if (this.lockStatusSub) {
+      this.lockStatusSub.unsubscribe();
+      this.lockStatusSub = null;
+    }
+
+    this.vehicleLocked = false;
+    this.lockRemainingSeconds = 0;
+
+    const hasVehicle = !!this.vehicleId?.trim();
+    if (hasVehicle) {
+      this.refreshLockStatus();
+      this.lockStatusSub = interval(1000).subscribe(() => {
+        if (this.lockRemainingSeconds > 0) {
+          this.lockRemainingSeconds -= 1;
+        }
+        if (this.lockRemainingSeconds <= 0 && this.vehicleLocked) {
+          this.refreshLockStatus();
+        }
+      });
+    }
+  }
+
+  protected checkTicketManually(): void {
+    const code = (this.manualTicketCode ?? '').trim();
+    const vehicle = (this.vehicleId ?? '').trim();
+    if (!code || !vehicle) {
+      this.resultMessage = 'Wpisz kod biletu i numer pojazdu.';
+      this.resultType = 'warning';
+      return;
+    }
+
+    if (this.manualChecking) return;
+    this.manualChecking = true;
+    this.resultMessage = 'Sprawdzanie biletu...';
+    this.resultType = 'info';
+
+    this.ticketService
+      .checkTicket(code, vehicle)
+      .pipe(finalize(() => (this.manualChecking = false)))
+      .subscribe({
+        next: (ok) => {
+          if (ok) {
+            this.resultMessage = 'Bilet jest ważny.';
+            this.resultType = 'success';
+            return;
+          }
+          this.resultMessage = 'Bilet jest nieważny.';
+          this.resultType = 'danger';
+        },
+        error: () => {
+          this.resultMessage = 'Nie znaleziono biletu lub wystąpił błąd.';
+          this.resultType = 'danger';
+        },
+      });
+  }
+
+  protected lockVehicleValidation(): void {
+    const vehicle = (this.vehicleId ?? '').trim();
+    if (!vehicle) {
+      this.resultMessage = 'Wpisz numer pojazdu.';
+      this.resultType = 'warning';
+      return;
+    }
+
+    if (this.lockLoading) return;
+    this.lockLoading = true;
+
+    this.ticketService
+      .lockVehicleValidation(vehicle, this.lockDurationMinutes)
+      .pipe(finalize(() => (this.lockLoading = false)))
+      .subscribe({
+        next: (status) => {
+          this.vehicleLocked = status.locked;
+          this.lockRemainingSeconds = status.remainingSeconds;
+          this.resultMessage = 'Kasowanie biletów w pojeździe zostało zablokowane.';
+          this.resultType = 'warning';
+        },
+        error: () => {
+          this.resultMessage = 'Nie udało się zablokować kasowania biletów.';
+          this.resultType = 'danger';
+        },
+      });
+  }
+
+  protected unlockVehicleValidation(): void {
+    const vehicle = (this.vehicleId ?? '').trim();
+    if (!vehicle) {
+      this.resultMessage = 'Wpisz numer pojazdu.';
+      this.resultType = 'warning';
+      return;
+    }
+
+    if (this.lockLoading) return;
+    this.lockLoading = true;
+
+    this.ticketService
+      .unlockVehicleValidation(vehicle)
+      .pipe(finalize(() => (this.lockLoading = false)))
+      .subscribe({
+        next: (status) => {
+          this.vehicleLocked = status.locked;
+          this.lockRemainingSeconds = status.remainingSeconds;
+          this.resultMessage = 'Kasowanie biletów w pojeździe zostało odblokowane.';
+          this.resultType = 'info';
+        },
+        error: () => {
+          this.resultMessage = 'Nie udało się odblokować kasowania biletów.';
+          this.resultType = 'danger';
+        },
+      });
+  }
+
+  private refreshLockStatus(): void {
+    const vehicle = (this.vehicleId ?? '').trim();
+    if (!vehicle) return;
+
+    this.ticketService.getVehicleValidationLockStatus(vehicle).subscribe({
+      next: (status) => {
+        this.vehicleLocked = status.locked;
+        this.lockRemainingSeconds = status.remainingSeconds;
+      },
+      error: () => {
+        this.vehicleLocked = false;
+        this.lockRemainingSeconds = 0;
+      },
+    });
   }
 
   private updateScannerState(): void {
     const hasVehicle = !!this.vehicleId?.trim();
 
     if (!hasVehicle) {
-      if (this.scanner) this.scanner.stop();
+      this.scanner?.stop();
       this.scannerActive = false;
       this.resultMessage = 'Wpisz numer pojazdu, aby uruchomić skaner.';
       this.resultType = 'warning';
@@ -119,6 +240,25 @@ export class CheckTicketComponent {
     this.resultType = 'info';
 
     try {
+      if (!this.scanner) {
+        QrScanner.WORKER_PATH = new URL(
+          'qr-scanner/qr-scanner-worker.min.js',
+          import.meta.url,
+        ).toString();
+
+        this.scanner = new QrScanner(
+          this.video.nativeElement,
+          ({ data }) => this.onCodeScanned(data),
+          {
+            returnDetailedScanResult: true,
+            preferredCamera: 'environment',
+            highlightScanRegion: true,
+            highlightCodeOutline: true,
+            maxScansPerSecond: 12,
+          },
+        );
+      }
+
       await this.scanner.start();
       // Prefer back camera if the library supports it.
       (this.scanner as unknown as { setCamera?: (c: string) => Promise<void> | void }).setCamera?.('environment');
@@ -136,7 +276,7 @@ export class CheckTicketComponent {
   }
 
   protected stopScanner(): void {
-    if (this.scanner) this.scanner.stop();
+    this.scanner?.stop();
     this.scannerActive = false;
     this.updateScannerState();
   }
@@ -151,7 +291,7 @@ export class CheckTicketComponent {
     this.lastCode = trimmed;
     this.inspecting = true;
     // Pause scanning while we validate/inspect, so we don't keep decoding frames.
-    if (this.scanner) this.scanner.stop();
+    this.scanner?.stop();
     this.scannerActive = false;
 
     this.resultMessage = 'Sprawdzanie biletu...';

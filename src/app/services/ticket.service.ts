@@ -11,6 +11,17 @@ export interface InspectTicketResponse {
   reason: string;
 }
 
+export interface VehicleTicketValidationLockRequest {
+  vehicleId: string;
+  durationMinutes?: number;
+}
+
+export interface VehicleTicketValidationLockStatus {
+  locked: boolean;
+  lockedUntilEpochSeconds: number | null;
+  remainingSeconds: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +30,7 @@ export class TicketService {
   private readonly TICKETS_URL = `${this.BASE_URL}/tickets`;
   private readonly PURCHASED_URL = `${this.BASE_URL}/boughttickets`;
   private readonly INSPECTION_URL = `${this.BASE_URL}/ticket-inspection`;
+  private readonly VEHICLE_LOCK_URL = `${this.BASE_URL}/vehicle-ticket-validation-lock`;
 
   constructor(private http: HttpClient, private bonusService: BonusService) {}
 
@@ -108,6 +120,31 @@ export class TicketService {
     const body = { vehicleId: vehicleId.trim() };
 
     return this.http.post<InspectTicketResponse>(`${this.TICKETS_URL}/${encodeURIComponent(code.trim())}/inspect`, body, { headers });
+  }
+
+  getVehicleValidationLockStatus(vehicleId: string): Observable<VehicleTicketValidationLockStatus> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<VehicleTicketValidationLockStatus>(
+      `${this.VEHICLE_LOCK_URL}/${encodeURIComponent(vehicleId.trim())}`,
+      { headers }
+    );
+  }
+
+  lockVehicleValidation(vehicleId: string, durationMinutes?: number): Observable<VehicleTicketValidationLockStatus> {
+    const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
+    const body: VehicleTicketValidationLockRequest = {
+      vehicleId: vehicleId.trim(),
+      durationMinutes,
+    };
+    return this.http.post<VehicleTicketValidationLockStatus>(`${this.VEHICLE_LOCK_URL}/lock`, body, { headers });
+  }
+
+  unlockVehicleValidation(vehicleId: string): Observable<VehicleTicketValidationLockStatus> {
+    const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
+    const body: VehicleTicketValidationLockRequest = {
+      vehicleId: vehicleId.trim(),
+    };
+    return this.http.post<VehicleTicketValidationLockStatus>(`${this.VEHICLE_LOCK_URL}/unlock`, body, { headers });
   }
 
 }

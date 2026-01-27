@@ -47,5 +47,73 @@
       />
       <div class="form-text">Po wpisaniu numeru pojazdu możesz uruchomić kamerę.</div>
     </div>
+
+    <hr class="my-4" />
+
+    <div class="mt-2">
+      <label for="manualTicketCode" class="form-label">Kod biletu (ręcznie)</label>
+      <input
+        id="manualTicketCode"
+        class="form-control"
+        [(ngModel)]="manualTicketCode"
+        placeholder="Np. ABCD1234"
+      />
+
+      <div class="d-grid gap-2 mt-2">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="checkTicketManually()"
+          [disabled]="manualChecking || !manualTicketCode?.trim() || !vehicleId?.trim()"
+        >
+          Sprawdź kod ręcznie
+        </button>
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="mt-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold">Blokada kasowania biletów</div>
+          <div class="form-text" *ngIf="vehicleId?.trim()">
+            Status: <strong>{{ vehicleLocked ? 'ZABLOKOWANE' : 'ODBLOCKOWANE' }}</strong>
+            <span *ngIf="vehicleLocked"> (pozostało {{ lockRemainingSeconds }}s)</span>
+          </div>
+        </div>
+
+        <div class="text-end" style="min-width: 140px;">
+          <select
+            class="form-select form-select-sm"
+            [(ngModel)]="lockDurationMinutes"
+            [disabled]="lockLoading || vehicleLocked"
+          >
+            <option [ngValue]="15">15 min</option>
+            <option [ngValue]="20">20 min</option>
+            <option [ngValue]="30">30 min</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2 mt-2">
+        <button
+          type="button"
+          class="btn btn-warning"
+          (click)="lockVehicleValidation()"
+          [disabled]="lockLoading || !vehicleId?.trim() || vehicleLocked"
+        >
+          Zablokuj kasowanie
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="unlockVehicleValidation()"
+          [disabled]="lockLoading || !vehicleId?.trim() || !vehicleLocked"
+        >
+          Odblokuj kasowanie
+        </button>
+      </div>
+    </div>
   </div>
 </div>
