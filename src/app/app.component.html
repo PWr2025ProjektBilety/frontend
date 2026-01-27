@@ -7,33 +7,33 @@
       </h1>
       <nav>
         <ul class="nav">
-          <li *ngIf="!isLoggedIn" class="nav-item">
-            <a class="nav-link text-white" routerLink="/login" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+          <li *ngIf="!authService.isLoggedIn" class="nav-item">
+            <a class="nav-link text-white" routerLink="/login" routerLinkActive="active-link">
               Logowanie
             </a>
           </li>
-          <li *ngIf="!isLoggedIn" class="nav-item">
-            <a class="nav-link text-white" routerLink="/register" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+          <li *ngIf="!authService.isLoggedIn " class="nav-item">
+            <a class="nav-link text-white" routerLink="/register" routerLinkActive="active-link">
               Rejestracja
             </a>
           </li>
-          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
-            <a class="nav-link text-white" routerLink="/tickets" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
+            <a class="nav-link text-white" routerLink="/tickets" routerLinkActive="active-link">
               Moje bilety
             </a>
           </li>
-          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'" class="nav-item">
-            <a class="nav-link text-white" routerLink="/offer" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
+            <a class="nav-link text-white" routerLink="/offer" routerLinkActive="active-link">
               Oferty biletowe
             </a>
           </li>
-          <li *ngIf="isLoggedIn && currentUser?.role === 'ROLE_INSPECTOR'" class="nav-item">
-            <a class="nav-link text-white" routerLink="/check-ticket" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+          <li *ngIf="authService.isLoggedIn && authService.isController" class="nav-item">
+            <a class="nav-link text-white" routerLink="/check-ticket" routerLinkActive="active-link">
               Sprawdź bilet
             </a>
           </li>
-          <li *ngIf="isLoggedIn" class="nav-item">
-            <a class="nav-link text-white" href="#" (click)="logout()">
+          <li *ngIf="authService.isLoggedIn" class="nav-item">
+            <a class="nav-link text-white" href="#" (click)="authService.logout()">
               Wyloguj się
             </a>
           </li>
@@ -42,7 +42,7 @@
     </div>
   </header>
 
-  <!-- Main content -->
+  <!-- Treść główna -->
   <main class="flex-grow-1 py-4 container mt-5">
     <div class="container">
       <router-outlet></router-outlet>

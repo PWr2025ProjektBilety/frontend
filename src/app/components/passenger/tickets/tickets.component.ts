@@ -7,6 +7,7 @@ import {
 import {DatePipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import {TicketService} from '../../../services/ticket.service';
 import {FormsModule} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-tickets',
@@ -31,10 +32,14 @@ export class TicketsComponent implements OnInit {
   size = 5;
   totalPages = 0;
 
-  constructor(private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.loadTickets();
+    this.route.data.subscribe((data) => {
+      console.log(data);
+      this.tickets = data['ticketData'].content;
+      this.totalPages = data['ticketData'].totalPages;
+    });
   }
 
   loadTickets() {
@@ -152,12 +157,10 @@ export class TicketsComponent implements OnInit {
   showMessage(msg: string) {
     this.message = msg;
 
-    // Wyczyść poprzedni timeout jeśli istnieje
     if (this.messageTimeout) {
       clearTimeout(this.messageTimeout);
     }
 
-    // Ustaw nowy timeout na 5 sekund
     this.messageTimeout = setTimeout(() => {
       this.message = null;
     }, 5000);

@@ -1,8 +1,7 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { TicketService } from '../../../services/ticket.service';
 import { FormsModule } from '@angular/forms';
 import { NgClass, NgIf } from '@angular/common';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-check-ticket',
@@ -14,22 +13,17 @@ import { Subscription } from 'rxjs';
     NgClass
   ]
 })
-export class CheckTicketComponent implements OnDestroy {
+export class CheckTicketComponent {
   ticketCode = '';
   vehicleId = '';
   resultMessage = '';
   resultType = '';
-  private subscription: Subscription | null = null;
 
   constructor(private ticketService: TicketService) {}
 
   checkTicket(): void {
     this.resultMessage = '';
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-
-    this.subscription = this.ticketService.checkTicket(this.ticketCode, this.vehicleId).subscribe({
+    this.ticketService.checkTicket(this.ticketCode, this.vehicleId).subscribe({
       next: (isValid) => {
         this.resultMessage = isValid
           ? 'Bilet jest ważny.'
@@ -44,7 +38,4 @@ export class CheckTicketComponent implements OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
-  }
 }

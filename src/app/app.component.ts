@@ -5,6 +5,7 @@ import { NgIf } from '@angular/common';
 import { User } from './models/auth.model';
 import { registerLocaleData } from '@angular/common';
 import localePl from '@angular/common/locales/pl';
+import {Subscription} from 'rxjs';
 
 registerLocaleData(localePl);
 
@@ -14,26 +15,9 @@ registerLocaleData(localePl);
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  title = 'frontend';
-  currentUser: User | null = null;
-
-  constructor(private authService: AuthService, private router: Router) {}
-
-  ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser();
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  get isLoggedIn(): boolean {
-    return !!this.currentUser;
-  }
-
+export class AppComponent {
   lastScrollTop = 0;
+  constructor(public authService: AuthService, private router: Router) {}
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
@@ -43,13 +27,10 @@ export class AppComponent implements OnInit {
     const currentScroll = window.scrollY;
 
     if (currentScroll > this.lastScrollTop) {
-      // Scroll w dół – ukryj nagłówek
       header.style.top = '-120px';
     } else {
-      // Scroll w górę – pokaż nagłówek
       header.style.top = '0';
     }
-
     this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
   }
 }

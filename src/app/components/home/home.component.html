@@ -8,14 +8,14 @@
   </div>
 
   <!-- Dla zalogowanego użytkownika -->
-  <div *ngIf="isLoggedIn && currentUser?.role === 'ROLE_USER'">
+  <div *ngIf="isLoggedIn && authService.isUser">
     <p class="fs-5">Cześć, {{ currentUser?.username }}!</p>
     <p>Przejdź do zakładki <strong>Oferty biletowe</strong>, aby zobaczyć dostępną ofertę oraz kupić bilet.</p>
     <p>Przejdź do zakładki <strong>Moje bilety</strong>, aby zobaczyć wszystkie kupione bilety, a także je skasować.</p>
   </div>
 
   <!-- Dla kontrolera -->
-  <div *ngIf="isLoggedIn && currentUser?.role === 'ROLE_INSPECTOR'">
+  <div *ngIf="isLoggedIn && authService.isController">
     <p class="fs-5">Cześć, kontrolerze {{ currentUser?.username }}!</p>
     <p>Możesz przejść do zakładki <strong>Sprawdź bilet</strong>, aby zweryfikować ważność biletów.</p>
   </div>

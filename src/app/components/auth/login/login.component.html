@@ -7,7 +7,10 @@
       type="text"
       id="loginUsername"
       name="username"
+      required
+      maxlength="20"
       [(ngModel)]="username"
+      (ngModelChange)="clearMessage()"
       placeholder="Wpisz nazwę użytkownika..."
       [class.is-invalid]="message"
     class="form-control"
@@ -20,14 +23,16 @@
       type="password"
       id="loginPassword"
       name="password"
+      required
+      maxlength="30"
       [(ngModel)]="password"
+      (ngModelChange)="clearMessage()"
       placeholder="Wpisz hasło..."
       [class.is-invalid]="message"
       class="form-control"
     />
   </div>
 
-  <!-- Error message -->
   <div *ngIf="message" class="text-danger mb-3">
     {{ message }}
   </div>

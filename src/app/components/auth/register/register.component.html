@@ -8,9 +8,11 @@
       name="username"
       type="text"
       [(ngModel)]="username"
+      (ngModelChange)="clearMessage()"
       #usernameInput="ngModel"
       required
       minlength="4"
+      maxlength="20"
       pattern="^[a-zA-Z0-9]+$"
       placeholder="Wpisz nazwę użytkownika..."
       class="form-control"
@@ -31,9 +33,11 @@
       name="password"
       type="password"
       [(ngModel)]="password"
+      (ngModelChange)="clearMessage()"
       #passwordInput="ngModel"
       required
       minlength="8"
+      maxlength="30"
       pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
       placeholder="Wpisz hasło..."
       class="form-control"
@@ -54,7 +58,7 @@
     Zarejestruj się
   </button>
 
-  <p *ngIf="message" [style.color]="message.includes('success') ? 'green' : 'orange'" class="mt-3 fw-semibold">
+  <p *ngIf="message" [style.color]="message.includes('pomyślnie') ? 'green' : 'orange'" class="mt-3 fw-semibold">
     {{ message }}
   </p>
 </form>

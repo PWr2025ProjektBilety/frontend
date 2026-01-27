@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TicketService } from '../../../services/ticket.service';
 import { BuyTicketRequest, PurchasedTicketDTO, Ticket } from '../../../models/ticket.model';
 import {FormsModule} from '@angular/forms';
-import {NgClass, NgIf, TitleCasePipe} from '@angular/common';
-import {routes} from '../../../app.routes';
+import {NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-buy-ticket',
@@ -17,8 +16,8 @@ import {routes} from '../../../app.routes';
   ],
   styleUrls: ['./buy-ticket.component.scss']
 })
-export class BuyTicketComponent implements OnInit {
-  ticket?: Ticket;
+export class BuyTicketComponent {
+  ticket: Ticket;
   reduced: boolean = false
   message: string | null = null;
   activationDate: string = this.getTodayAsDateString();
@@ -27,25 +26,14 @@ export class BuyTicketComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
     private ticketService: TicketService
   ) {
     const navigation = this.router.getCurrentNavigation();
     this.ticket = navigation?.extras.state?.['ticket'];
 
     if (!this.ticket) {
-      const storedTicket = localStorage.getItem('selectedTicket');
-      if (storedTicket) {
-        this.ticket = JSON.parse(storedTicket);
-      } else {
-        alert('Brak danych biletu...');
         this.router.navigate(['/']);
-      }
     }
-  }
-
-  ngOnInit() {
-
   }
 
   cancel() {
@@ -79,7 +67,6 @@ export class BuyTicketComponent implements OnInit {
 
   getActivationDateISO(): string {
     if (!this.activationDate) return '';
-
     return new Date(this.activationDate + 'T00:00:00Z').toISOString();
   }
 

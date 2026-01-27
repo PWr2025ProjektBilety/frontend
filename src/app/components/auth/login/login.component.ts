@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
-import {FormsModule, NgForm} from '@angular/forms';
+import {FormsModule } from '@angular/forms';
 import {NgIf} from '@angular/common';
 
 @Component({
@@ -30,4 +30,9 @@ export class LoginComponent {
       },
     });
   }
+
+  clearMessage() {
+    this.message = '';
+  }
+
 }
