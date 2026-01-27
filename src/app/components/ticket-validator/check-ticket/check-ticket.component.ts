@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnInit,
   OnDestroy,
   ViewChild,
 } from '@angular/core';
@@ -46,6 +47,10 @@ export class CheckTicketComponent {
   private readonly scanCooldownMs = 1200;
 
   constructor(private ticketService: TicketService) {}
+
+  ngOnInit(): void {
+    this.updateScannerState();
+  }
 
   ngAfterViewInit(): void {
     this.video.nativeElement.playsInline = true;

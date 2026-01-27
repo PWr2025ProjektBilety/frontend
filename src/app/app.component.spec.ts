@@ -4,6 +4,7 @@ import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -18,6 +19,7 @@ describe('AppComponent', () => {
       imports: [
         AppComponent,
         RouterTestingModule.withRoutes([]),
+        HttpClientTestingModule,
       ],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
