@@ -3,6 +3,8 @@ import {BuyTicketRequest, PurchasedTicketDTO, Ticket, TicketValidationRequest} f
 import { Observable } from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Page} from '../models/page.model';
+import { BonusService } from './bonus.service';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +15,7 @@ export class TicketService {
   private readonly PURCHASED_URL = `${this.BASE_URL}/boughttickets`;
   private readonly INSPECTION_URL = `${this.BASE_URL}/ticket-inspection`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private bonusService: BonusService) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('jwtToken') || '';
@@ -33,6 +35,10 @@ export class TicketService {
       `${this.PURCHASED_URL}/buy`,
       request,
       { headers: this.getAuthHeaders() }
+    ).pipe(
+      tap(() => {
+        this.bonusService.notifyPointsChanged();
+      })
     );
   }
 

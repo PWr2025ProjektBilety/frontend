@@ -22,6 +22,10 @@
               Moje bilety
             </a>
           </li>
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item points-container">
+            <span class="points-text">{{ pointsBalance }} points</span>
+            <span class="points-icon">⭐ {{ pointsBalance }}</span>
+          </li>
           <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
             <a class="nav-link text-white" routerLink="/offer" routerLinkActive="active-link">
               Oferty biletowe
