@@ -1,7 +1,8 @@
 .avatar-circle {
   width: 40px;
   height: 40px;
-  border-radius: 12px; /* Lekko zaokrąglony kwadrat wygląda nowocześniej niż koło */
+  min-width: 40px; // Zapobiega ściskaniu na mobile
+  border-radius: 12px;
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   color: white;
   display: flex;
@@ -27,4 +28,18 @@
 .rounded-end-pill {
   border-top-right-radius: 50rem !important;
   border-bottom-right-radius: 50rem !important;
+}
+
+@media (max-width: 767.98px) {
+  .auth-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .input-group {
+    .btn {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      font-size: 0.75rem;
+    }
+  }
 }

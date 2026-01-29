@@ -66,6 +66,10 @@ export class ManageTicketsComponent implements OnInit {
   }
 
   onCreateTicket(): void {
+    this.errorMessage = '';
+
+    if (!this.validateTicket()) return;
+
     const ticketToSave = { ...this.newTicket };
     if (ticketToSave.id === 0) delete ticketToSave.id;
 
@@ -78,6 +82,31 @@ export class ManageTicketsComponent implements OnInit {
       },
       error: () => this.errorMessage = 'Błąd podczas zapisu biletu.'
     });
+  }
+
+  private validateTicket(): boolean {
+    // Walidacja ceny
+    if (this.newTicket.price <= 0) {
+      this.errorMessage = 'Cena musi być większa niż 0.';
+      return false;
+    }
+    if (this.newTicket.price > 9999) {
+      this.errorMessage = 'Maksymalna cena to 9999 PLN.';
+      return false;
+    }
+
+    // Walidacja ważności (tylko dla biletów które nie są jednorazowe)
+    if (this.newTicket.type !== 'SINGLE_RIDE_TICKET') {
+      if (!this.newTicket.validityPeriod || this.newTicket.validityPeriod <= 0) {
+        this.errorMessage = 'Ważność musi być większa niż 0.';
+        return false;
+      }
+      if (this.newTicket.validityPeriod > 999) {
+        this.errorMessage = 'Maksymalna ważność to 999.';
+        return false;
+      }
+    }
+    return true;
   }
 
 
