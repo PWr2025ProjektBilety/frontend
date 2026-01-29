@@ -3,3 +3,19 @@
   height: 24px;
   border: solid 2px #66b2ff;
 }
+.btn-points {
+  background-color: #ff9800 !important;
+  border-color: #ff9800 !important;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: #e68900 !important;
+    border-color: #e68900 !important;
+  }
+
+  &:disabled {
+    background-color: #ffcc99 !important;
+    border-color: #ffcc99 !important;
+    color: #ccc;
+  }
+}

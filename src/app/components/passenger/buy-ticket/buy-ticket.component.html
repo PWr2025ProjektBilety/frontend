@@ -63,6 +63,14 @@
         Kup
       </button>
       <button
+        *ngIf="userPoints >= calculatePointsCost()"
+        class="btn btn-points btn-lg px-4"
+        (click)="onBuyWithPoints()"
+        [disabled]="(ticket.type === 'PERIODIC_TICKET' && !activationDate)"
+      >
+        Kup za {{ calculatePointsCost() }} pkt
+      </button>
+      <button
         class="btn btn-secondary btn-lg px-4"
         (click)="cancel()"
       >
