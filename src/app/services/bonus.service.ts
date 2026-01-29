@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, Subject, of } from 'rxjs';
 
 export interface BonusBalance {
@@ -31,10 +31,26 @@ export class BonusService {
     });
   }
 
-  buyTicketWithPoints(ticketId: number, isDiscounted: boolean): Observable<any> {
-    const url = '/api/purchased-tickets/buy-with-points';
-    const payload = { ticketId, isDiscounted };
+  buyTicketWithPoints(ticketId: number, ticketType: string, reduced: boolean, startTime?: string): Observable<any> {
+    const url = '/api/boughttickets/buy-with-points';
+    const token = sessionStorage.getItem('jwtToken');
+    
+    const payload: any = {
+      ticketType,
+      reduced,
+    };
+    
+    if (startTime) {
+      payload.startTime = startTime;
+    }
+    
+    console.log('BuyTicketWithPoints - Token present:', !!token);
+    console.log('BuyTicketWithPoints - TicketId:', ticketId);
+    console.log('BuyTicketWithPoints - Payload:', payload);
+    console.log('BuyTicketWithPoints - URL:', url);
+    
     return this.http.post<any>(url, payload, {
+      params: new HttpParams().set('ticketId', ticketId.toString()),
       headers: this.getAuthHeaders(),
     });
   }

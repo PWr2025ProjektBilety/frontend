@@ -123,14 +123,28 @@ export class BuyTicketComponent implements OnInit {
 
     this.message = null;
 
-    this.bonusService.buyTicketWithPoints(this.ticket.id, this.reduced).subscribe({
+    const startTime = this.ticket.type === 'PERIODIC_TICKET' ? this.getActivationDateISO() : undefined;
+
+    this.bonusService.buyTicketWithPoints(
+      this.ticket.id,
+      this.ticket.type,
+      this.reduced,
+      startTime
+    ).subscribe({
       next: (res) => {
         this.message = `Kupiono bilet za punkty: kod ${res.code}`;
         console.log(res);
         this.bonusService.notifyPointsChanged();
       },
       error: (err) => {
-        this.message = 'Kupno biletu za punkty nie powiodło się.';
+        if (err.status === 402) {
+          this.message = 'Niewystarczająco punktów. Potrzebujesz ' + this.calculatePointsCost() + ' pkt.';
+        } else if (err.status === 500) {
+          this.message = 'Błąd serwera: ' + (err.error?.error || 'Spróbuj ponownie.');
+          console.error('Server error:', err);
+        } else {
+          this.message = 'Kupno biletu za punkty nie powiodło się.';
+        }
         console.error(err);
       }
     });
