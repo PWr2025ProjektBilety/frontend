@@ -9,7 +9,12 @@ describe('CheckTicketComponent', () => {
   let ticketServiceSpy: jasmine.SpyObj<TicketService>;
 
   beforeEach(async () => {
-    ticketServiceSpy = jasmine.createSpyObj('TicketService', ['checkTicket']);
+    ticketServiceSpy = jasmine.createSpyObj('TicketService', [
+      'checkTicket',
+      'lockVehicleValidation',
+      'unlockVehicleValidation',
+      'getVehicleValidationLockStatus',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [CheckTicketComponent],
@@ -25,37 +30,24 @@ describe('CheckTicketComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should disable the check button if ticketCode or vehicleId are empty or whitespace', () => {
-    component.ticketCode = '';
+  it('should show warning if manual check is invoked without code or vehicleId', () => {
+    component.manualTicketCode = '';
     component.vehicleId = '';
-    fixture.detectChanges();
 
-    const button = fixture.nativeElement.querySelector('button');
-    expect(button.disabled).toBeTrue();
+    (component as any).checkTicketManually();
 
-    component.ticketCode = '  ';
-    component.vehicleId = '123';
-    fixture.detectChanges();
-    expect(button.disabled).toBeTrue();
-
-    component.ticketCode = 'code';
-    component.vehicleId = '  ';
-    fixture.detectChanges();
-    expect(button.disabled).toBeTrue();
-
-    component.ticketCode = 'code';
-    component.vehicleId = '123';
-    fixture.detectChanges();
-    expect(button.disabled).toBeFalse();
+    expect(component.resultType).toBe('warning');
+    expect(component.resultMessage).toBe('Wpisz kod biletu i numer pojazdu.');
+    expect(ticketServiceSpy.checkTicket).not.toHaveBeenCalled();
   });
 
-  it('should call ticketService.checkTicket with correct parameters and show success message on valid ticket', fakeAsync(() => {
-    component.ticketCode = 'ticket123';
+  it('should call ticketService.checkTicket and show success message on valid ticket', fakeAsync(() => {
+    component.manualTicketCode = 'ticket123';
     component.vehicleId = 'veh456';
 
     ticketServiceSpy.checkTicket.and.returnValue(of(true));
 
-    component.checkTicket();
+    (component as any).checkTicketManually();
     tick();
 
     expect(ticketServiceSpy.checkTicket).toHaveBeenCalledWith('ticket123', 'veh456');
@@ -63,33 +55,77 @@ describe('CheckTicketComponent', () => {
     expect(component.resultType).toBe('success');
   }));
 
-  it('should show error message when ticket is invalid', fakeAsync(() => {
-    component.ticketCode = 'ticket123';
+  it('should show error message when manual ticket check is invalid', fakeAsync(() => {
+    component.manualTicketCode = 'ticket123';
     component.vehicleId = 'veh456';
 
     ticketServiceSpy.checkTicket.and.returnValue(of(false));
 
-    component.checkTicket();
+    (component as any).checkTicketManually();
     tick();
 
     expect(component.resultMessage).toBe('Bilet jest nieważny.');
     expect(component.resultType).toBe('danger');
   }));
 
-  it('should show error message on service error', fakeAsync(() => {
-    component.ticketCode = 'ticket123';
+  it('should show error message on manual check service error', fakeAsync(() => {
+    component.manualTicketCode = 'ticket123';
     component.vehicleId = 'veh456';
 
     ticketServiceSpy.checkTicket.and.returnValue(throwError(() => new Error('Service error')));
 
-    spyOn(console, 'error');
-
-    component.checkTicket();
+    (component as any).checkTicketManually();
     tick();
 
     expect(component.resultMessage).toBe('Nie znaleziono biletu lub wystąpił błąd.');
     expect(component.resultType).toBe('danger');
-    expect(console.error).toHaveBeenCalled();
+  }));
+
+  it('should show warning when trying to lock vehicle without vehicleId', () => {
+    component.vehicleId = '';
+
+    (component as any).lockVehicleValidation();
+
+    expect(component.resultType).toBe('warning');
+    expect(component.resultMessage).toBe('Wpisz numer pojazdu.');
+    expect(ticketServiceSpy.lockVehicleValidation).not.toHaveBeenCalled();
+  });
+
+  it('should call lockVehicleValidation and update status', fakeAsync(() => {
+    component.vehicleId = 'BUS1';
+    component.lockDurationMinutes = 20;
+
+    ticketServiceSpy.lockVehicleValidation.and.returnValue(of({
+      locked: true,
+      lockedUntilEpochSeconds: 123,
+      remainingSeconds: 1200,
+    }));
+
+    (component as any).lockVehicleValidation();
+    tick();
+
+    expect(ticketServiceSpy.lockVehicleValidation).toHaveBeenCalledWith('BUS1', 20);
+    expect(component.vehicleLocked).toBeTrue();
+    expect(component.lockRemainingSeconds).toBe(1200);
+  }));
+
+  it('should call unlockVehicleValidation and update status', fakeAsync(() => {
+    component.vehicleId = 'BUS1';
+    component.vehicleLocked = true;
+    component.lockRemainingSeconds = 100;
+
+    ticketServiceSpy.unlockVehicleValidation.and.returnValue(of({
+      locked: false,
+      lockedUntilEpochSeconds: null,
+      remainingSeconds: 0,
+    }));
+
+    (component as any).unlockVehicleValidation();
+    tick();
+
+    expect(ticketServiceSpy.unlockVehicleValidation).toHaveBeenCalledWith('BUS1');
+    expect(component.vehicleLocked).toBeFalse();
+    expect(component.lockRemainingSeconds).toBe(0);
   }));
 
 });
