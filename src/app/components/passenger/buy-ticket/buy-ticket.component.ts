@@ -4,7 +4,7 @@ import { TicketService } from '../../../services/ticket.service';
 import { BonusService } from '../../../services/bonus.service';
 import { BuyTicketRequest, PurchasedTicketDTO, Ticket } from '../../../models/ticket.model';
 import {FormsModule} from '@angular/forms';
-import {NgClass, NgIf } from '@angular/common';
+import {DecimalPipe, NgClass, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-buy-ticket',
@@ -13,7 +13,8 @@ import {NgClass, NgIf } from '@angular/common';
   imports: [
     FormsModule,
     NgIf,
-    NgClass
+    NgClass,
+    DecimalPipe
   ],
   styleUrls: ['./buy-ticket.component.scss']
 })

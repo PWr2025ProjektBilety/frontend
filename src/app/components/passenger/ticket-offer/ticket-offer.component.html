@@ -1,45 +1,97 @@
-<div class="ticket-offer">
-  <h2 class="text-center">Oferta biletowa</h2>
-  <div *ngIf="tickets.length === 0">Brak dostępnych biletów.</div>
+<div class="container-fluid container-md mt-4 mb-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-dark mb-0">Oferta Biletowa</h2>
+    <p class="text-muted small text-uppercase fw-bold pt-2 mb-0" style="letter-spacing: 1.5px;">
+      <i class="bi bi-ticket-perforated-fill me-1 text-primary"></i> Wybierz swój bilet
+    </p>
+  </div>
 
-  <div *ngIf="tickets.length > 0" class="row">
-    <div class="col-md-4">
-      <h3>Bilety jednorazowe</h3>
-      <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: singleRideTickets, validityLabel: 'minut' }"></ng-container>
+  <div *ngIf="tickets.length === 0" class="text-center p-5 bg-white shadow-sm rounded-4 border border-dashed">
+    <i class="bi bi-search display-1 text-muted opacity-25"></i>
+    <p class="mt-3 fw-bold text-muted">Obecnie brak dostępnych biletów w ofercie.</p>
+  </div>
+
+  <div *ngIf="tickets.length > 0">
+    <div class="ticket-section mb-5" *ngIf="singleRideTickets.length > 0">
+      <div class="d-flex align-items-center mb-3 px-2">
+        <div class="icon-circle bg-primary text-white me-3 shadow-sm">
+          <i class="bi bi-ticket-perforated"></i>
+        </div>
+        <h5 class="fw-bold mb-0 text-dark">Bilety jednorazowe</h5>
+      </div>
+      <div class="row g-3">
+        <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: singleRideTickets, validityLabel: 'min' }"></ng-container>
+      </div>
     </div>
 
-    <div class="col-md-4">
-      <h3>Bilety czasowe</h3>
-      <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: timeBasedTickets, validityLabel: 'minut' }"></ng-container>
+    <div class="ticket-section mb-5" *ngIf="timeBasedTickets.length > 0">
+      <div class="d-flex align-items-center mb-3 px-2">
+        <div class="icon-circle bg-info text-white me-3 shadow-sm">
+          <i class="bi bi-clock-history"></i>
+        </div>
+        <h5 class="fw-bold mb-0 text-dark">Bilety czasowe</h5>
+      </div>
+      <div class="row g-3">
+        <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: timeBasedTickets, validityLabel: 'min' }"></ng-container>
+      </div>
     </div>
 
-    <div class="col-md-4">
-      <h3>Bilety okresowe</h3>
-      <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: periodicTickets, validityLabel: 'dni' }"></ng-container>
+    <div class="ticket-section mb-5" *ngIf="periodicTickets.length > 0">
+      <div class="d-flex align-items-center mb-3 px-2">
+        <div class="icon-circle bg-warning text-white me-3 shadow-sm">
+          <i class="bi bi-calendar-range"></i>
+        </div>
+        <h5 class="fw-bold mb-0 text-dark">Bilety okresowe</h5>
+      </div>
+      <div class="row g-3">
+        <ng-container *ngTemplateOutlet="ticketCard; context: { $implicit: periodicTickets, validityLabel: 'dni' }"></ng-container>
+      </div>
     </div>
   </div>
 
   <ng-template #ticketCard let-tickets let-validityLabel="validityLabel">
-    <div *ngFor="let ticket of tickets"
-         class="card mb-3 p-3 border"
-         [ngClass]="{'bg-warning bg-opacity-25': ticket.discountAvailable}">
-      <div class="d-flex align-items-center">
-        <div class="me-3 fs-1 fw-bold text-primary">{{ ticket.price }}zł</div>
-        <div>
-          <p class="mb-1 fw-semibold" [ngClass]="ticket.discountAvailable ? 'text-success' : 'text-secondary'">
-            {{ ticket.discountAvailable ? 'Dostępny Bilet ulgowy ze zniżką dla uczniów, studentów i seniorów.' : 'Dostępny jedynie bilet normalny' }}
-          </p>
-          <p *ngIf="ticket.validityPeriod">
-            <strong>Okres ważności:</strong> {{ ticket.validityPeriod }} {{ validityLabel }}
-          </p>
+    <div *ngFor="let ticket of tickets" class="col-12 col-xl-6">
+      <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden ticket-item-card transition-all mb-3">
+        <div class="card-body p-0 d-flex align-items-stretch">
+
+          <div class="price-sidebar d-flex flex-column justify-content-center align-items-center bg-white px-2 py-4"
+               style="flex: 0 0 30%; border-right: 2px dashed #eee;">
+            <div class="price-value text-primary text-center"
+                 style="font-size: clamp(1.2rem, 4vw, 2.2rem); line-height: 1; font-weight: 900 !important;">
+              {{ ticket.price | number:'1.2-2' }}
+            </div>
+            <div class="price-currency text-uppercase fw-bold text-muted small mt-1" style="letter-spacing: 1px; font-size: 0.7rem;">PLN</div>
+          </div>
+
+          <div class="p-3 flex-grow-1 d-flex flex-column justify-content-between"
+               [style.background-color]="ticket.type === 'SINGLE_RIDE_TICKET' ? '#e3f2fd' :
+                                       (ticket.type === 'TIME_BASED_TICKET' ? '#f3e5f5' : '#fff8e1')">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+              <span class="badge rounded-pill bg-white text-dark border px-3 py-2 small fw-bold shadow-sm" style="font-size: 0.65rem; border-color: rgba(0,0,0,0.1) !important;">
+                BILET NORMALNY
+              </span>
+                <span *ngIf="ticket.validityPeriod" class="small fw-bold text-primary bg-white px-2 py-1 rounded border shadow-sm" style="font-size: 0.75rem;">
+                <i class="bi bi-hourglass-split me-1"></i>{{ ticket.validityPeriod }} {{ validityLabel }}
+              </span>
+              </div>
+
+              <div class="discount-notice rounded-3 p-2 d-flex align-items-center shadow-sm bg-white bg-opacity-75">
+                <i class="bi me-2 fs-5" [ngClass]="ticket.discountAvailable ? 'bi-patch-check-fill text-success' : 'bi-info-circle text-muted'"></i>
+                <span class="small fw-bold" [ngClass]="ticket.discountAvailable ? 'text-success-emphasis' : 'text-muted'" style="font-size: 0.75rem;">
+                {{ ticket.discountAvailable ? 'Dostępna zniżka -50% (ulga)' : 'Brak wariantów ulgowych' }}
+              </span>
+              </div>
+            </div>
+
+            <button class="btn btn-dark w-100 mt-3 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center gap-2 buy-btn shadow"
+                    (click)="goToBuyTicket(ticket)">
+              KUP BILET <i class="bi bi-arrow-right-short fs-4"></i>
+            </button>
+          </div>
+
         </div>
       </div>
-      <button class="btn btn-outline-success btn-sm mt-2"
-              (click)="goToBuyTicket(ticket)">
-        <i class="bi bi-cart-plus"></i> Kup bilet
-      </button>
-
     </div>
   </ng-template>
-
 </div>
