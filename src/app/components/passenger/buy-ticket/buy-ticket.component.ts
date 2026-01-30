@@ -123,13 +123,9 @@ export class BuyTicketComponent implements OnInit {
 
     this.message = null;
 
-    const startTime = this.ticket.type === 'PERIODIC_TICKET' ? this.getActivationDateISO() : undefined;
-
     this.bonusService.buyTicketWithPoints(
       this.ticket.id,
-      this.ticket.type,
-      this.reduced,
-      startTime
+      this.reduced
     ).subscribe({
       next: (res) => {
         this.message = `Kupiono bilet za punkty: kod ${res.code}`;

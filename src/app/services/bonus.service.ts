@@ -31,26 +31,18 @@ export class BonusService {
     });
   }
 
-  buyTicketWithPoints(ticketId: number, ticketType: string, reduced: boolean, startTime?: string): Observable<any> {
+  buyTicketWithPoints(ticketId: number, discounted: boolean): Observable<any> {
     const url = '/api/boughttickets/buy-with-points';
     const token = sessionStorage.getItem('jwtToken');
-    
-    const payload: any = {
-      ticketType,
-      reduced,
-    };
-    
-    if (startTime) {
-      payload.startTime = startTime;
-    }
-    
+    const params = new HttpParams()
+      .set('ticketId', ticketId.toString())
+      .set('discounted', discounted.toString());
     console.log('BuyTicketWithPoints - Token present:', !!token);
     console.log('BuyTicketWithPoints - TicketId:', ticketId);
-    console.log('BuyTicketWithPoints - Payload:', payload);
+    console.log('BuyTicketWithPoints - Discounted:', discounted);
     console.log('BuyTicketWithPoints - URL:', url);
-    
-    return this.http.post<any>(url, payload, {
-      params: new HttpParams().set('ticketId', ticketId.toString()),
+    return this.http.post<any>(url, {}, {
+      params,
       headers: this.getAuthHeaders(),
     });
   }
