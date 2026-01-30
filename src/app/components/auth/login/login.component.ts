@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import {Router, RouterLink} from '@angular/router';
-import {FormsModule } from '@angular/forms';
-import {NgIf} from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { BonusService } from '../../../services/bonus.service';
+import { FormsModule } from '@angular/forms';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -15,13 +16,14 @@ export class LoginComponent {
   password = '';
   message = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private bonusService: BonusService) {}
 
   onLogin() {
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (res) => {
         this.message = 'Zalogowano się pomyślnie!';
         console.log(res);
+        this.bonusService.notifyPointsChanged();
         this.router.navigate(['']);
       },
       error: (err) => {
