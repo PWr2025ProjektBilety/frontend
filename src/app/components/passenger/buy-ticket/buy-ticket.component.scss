@@ -1,5 +1,46 @@
-.custom-checkbox {
-  width: 24px;
-  height: 24px;
-  border: solid 2px #66b2ff;
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4); // Przyciemnienie
+  backdrop-filter: blur(8px);    // Rozmycie tła
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-card {
+  min-width: 320px;
+  max-width: 90%;
+  border: none;
+
+  .icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Bilet
+.ticket-item-card {
+  border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+// Checkbox customowy
+.custom-checkbox:checked {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border: none;
+  &:hover { background-color: #e0a800; }
 }

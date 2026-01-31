@@ -1,100 +1,94 @@
-<div class="buy-ticket-container container">
-  <h2 class="text-center mb-4 fw-bold">Kup bilet</h2>
+<div *ngIf="message" class="popup-overlay animate__animated animate__fadeIn">
+  <div class="popup-card bg-white p-4 rounded-4 shadow-lg text-center animate__animated animate__zoomIn">
+    <div class="icon-circle bg-success-subtle text-success mx-auto mb-3 d-flex align-items-center justify-content-center"
+         style="width: 60px; height: 60px; border-radius: 50%;">
+      <i class="bi bi-check-lg fs-2"></i>
+    </div>
+    <p class="fs-5 fw-bold mb-4 text-dark">{{ message }}</p>
+    <button type="button" class="btn btn-dark rounded-pill px-5 fw-bold py-2 shadow-sm" (click)="closePopup()">
+      Zamknij
+    </button>
+  </div>
+</div>
 
-  <div *ngIf="ticket; else noTicket" class="card p-4 shadow-sm mx-auto" style="max-width: 500px;">
-    <h3 class="text-center text-primary mb-3">
-      {{ getTicketTypePolish(ticket.type) }}
-    </h3>
-
-    <p class="display-4 text-center fw-bold mb-3">{{ ticket.price }} zł</p>
-
-    <p *ngIf="ticket.validityPeriod" class="text-center mb-3 fs-5">
-      <strong>Okres ważności:</strong> {{ ticket.validityPeriod }}
-      {{ ticket.type === 'PERIODIC_TICKET' ? 'dni' : 'minut' }}
+<div class="buy-ticket-container container mt-4 mb-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-dark mb-0">Podsumowanie zakupu</h2>
+    <p class="text-muted small text-uppercase fw-bold pt-2" style="letter-spacing: 1px;">
+      <i class="bi bi-shield-check me-1 text-primary"></i> Dokończ transakcję
     </p>
+  </div>
 
-    <p class="text-center mb-3 fs-5">
-      <strong>Zniżka dostępna:</strong>
-      <span [ngClass]="ticket.discountAvailable ? 'text-success' : 'text-danger'">
-        {{ ticket.discountAvailable ? 'Tak' : 'Nie' }}
-      </span>
-    </p>
+  <div *ngIf="ticket; else noTicket" class="mx-auto" style="max-width: 500px;">
 
-    <p *ngIf="ticket.discountAvailable" class="text-center fst-italic text-muted mb-4">
-      Ulga 50% dla uczniów, studentów i emerytów.
-    </p>
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4 ticket-item-card transition-all">
+      <div class="card-body p-0 d-flex align-items-stretch">
+        <div class="price-sidebar d-flex flex-column justify-content-center align-items-center bg-white py-4"
+             style="flex: 0 0 30%; border-right: 2px dashed #eee;">
+          <div class="price-value text-primary text-center"
+               style="font-size: clamp(1.2rem, 4vw, 2.2rem); line-height: 1; font-weight: 900 !important;">
+            {{ (reduced ? ticket.price / 2 : ticket.price) | number:'1.2-2' }}
+          </div>
+          <div class="price-currency text-uppercase fw-bold text-muted small mt-1" style="letter-spacing: 1px; font-size: 0.7rem;">PLN</div>
+        </div>
 
-    <!-- Checkbox na ulgę -->
-    <div *ngIf="ticket.discountAvailable" class="form-check mb-4 d-flex justify-content-center">
-      <input
-        type="checkbox"
-        id="reducedCheckbox"
-        class="form-check-input me-2 custom-checkbox"
-        [(ngModel)]="reduced"
-      />
-      <label for="reducedCheckbox" class="form-check-label fs-5">
-        Kup bilet ulgowy (50% zniżki)
-      </label>
+        <div class="p-3 flex-grow-1 d-flex flex-column justify-content-center"
+             [style.background-color]="ticket.type === 'SINGLE_RIDE_TICKET' ? '#e3f2fd' :
+                                       (ticket.type === 'TIME_BASED_TICKET' ? '#f3e5f5' : '#fff8e1')">
+          <span class="badge rounded-pill bg-white text-dark border px-3 py-2 small fw-bold shadow-sm mb-2" style="font-size: 0.65rem; align-self: start;">
+            {{ reduced ? 'BILET ULGOWY' : 'BILET NORMALNY' }}
+          </span>
+          <h4 class="fw-bold text-dark mb-1">{{ getTicketTypePolish(ticket.type) }}</h4>
+          <p *ngIf="ticket.validityPeriod" class="small fw-bold text-primary mb-0">
+            <i class="bi bi-hourglass-split me-1"></i>{{ ticket.validityPeriod }} {{ ticket.type === 'PERIODIC_TICKET' ? 'dni' : 'min' }}
+          </p>
+        </div>
+      </div>
     </div>
 
-    <!-- Data aktywacji biletu okresowego -->
+    <div class="card p-4 shadow-sm border-0 rounded-4 position-relative">
+      <div *ngIf="ticket.discountAvailable" class="mb-4">
+        <div class="form-check p-3 rounded-3 border d-flex align-items-center bg-light" [class.border-success]="reduced">
+          <input type="checkbox" id="reducedCheckbox" class="form-check-input me-3 custom-checkbox" [(ngModel)]="reduced" style="width: 1.5rem; height: 1.5rem;" />
+          <label for="reducedCheckbox" class="form-check-label fw-bold text-dark mb-0">
+            Kup bilet ulgowy (50% zniżki)
+            <small class="d-block fw-normal text-muted">Dla studentów, uczniów i seniorów</small>
+          </label>
+        </div>
+      </div>
 
-    <div *ngIf="ticket.type === 'PERIODIC_TICKET'" class="mb-4 text-center">
-      <label for="activationDate" class="form-label fw-bold big-data-picker">Wybierz datę aktywacji:</label>
-      <input
-        id="activationDate"
-        type="date"
-        class="form-control mx-auto big-datepicker"
-        style="max-width: 225px;"
-        [(ngModel)]="activationDate"
-        [min]="minDate"
-        [max]="maxDate"
-      />
-    </div>
+      <div *ngIf="ticket.type === 'PERIODIC_TICKET'" class="mb-4">
+        <label for="activationDate" class="form-label fw-bold small text-secondary text-uppercase">Wybierz datę aktywacji:</label>
+        <div class="input-group">
+          <span class="input-group-text bg-white border-2 border-end-0"><i class="bi bi-calendar-event text-primary"></i></span>
+          <input id="activationDate" type="date" class="form-control border-2 border-start-0 ps-0 fw-bold"
+                 [(ngModel)]="activationDate" [min]="minDate" [max]="maxDate" />
+        </div>
+      </div>
 
+      <div class="d-grid gap-2">
+        <button class="btn btn-success btn-lg rounded-pill fw-bold py-3 shadow-sm"
+                (click)="buy()" [disabled]="(ticket.type === 'PERIODIC_TICKET' && !activationDate)">
+          ZAPŁAĆ I KUP
+        </button>
 
-    <!-- Przyciski -->
-    <div class="d-flex justify-content-center gap-3">
-      <button
-        class="btn btn-success btn-lg px-4"
-        (click)="buy()"
-        [disabled]="(ticket.type === 'PERIODIC_TICKET' && !activationDate)"
-      >
-        Kup
-      </button>
-      <button
-        class="btn btn-secondary btn-lg px-4"
-        (click)="cancel()"
-      >
-        Anuluj
-      </button>
+        <button *ngIf="userPoints >= calculatePointsCost()"
+                class="btn btn-warning btn-lg rounded-pill fw-bold py-3 shadow-sm text-dark"
+                (click)="onBuyWithPoints()" [disabled]="(ticket.type === 'PERIODIC_TICKET' && !activationDate)">
+          KUP ZA {{ calculatePointsCost() }} PKT
+        </button>
+
+        <button class="btn btn-link text-muted fw-bold text-decoration-none" (click)="cancel()">
+          Anuluj
+        </button>
+      </div>
     </div>
   </div>
 
   <ng-template #noTicket>
-    <p class="text-center text-danger mt-5 fs-5">
-      Brak danych biletu. Powrót do listy...
-    </p>
-  </ng-template>
-
-  <!-- Popup z wiadomością o kupionym bilecie -->
-  <div
-    *ngIf="message"
-    class="popup-backdrop d-flex justify-content-center align-items-center"
-    style="position: fixed; inset: 0; z-index: 1050;"
-  >
-    <div
-      class="popup-content bg-white p-4 rounded shadow-lg text-center"
-      style="min-width: 300px; max-width: 90vw;"
-    >
-      <p class="fs-5 mb-4">{{ message }}</p>
-      <button
-        type="button"
-        class="btn btn-outline-success"
-        (click)="closePopup()"
-      >
-        Zamknij
-      </button>
+    <div class="text-center mt-5 p-5 bg-light rounded-4 border border-dashed">
+      <i class="bi bi-ticket-detailed display-1 opacity-25"></i>
+      <p class="mt-3 fs-5 fw-bold text-muted">Brak danych biletu. Powrót do listy...</p>
     </div>
-  </div>
+  </ng-template>
 </div>

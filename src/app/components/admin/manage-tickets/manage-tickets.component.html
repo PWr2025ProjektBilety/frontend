@@ -1,18 +1,18 @@
-<div class="container mt-5 mb-5">
+<div class="container mt-4 mt-md-5 mb-5">
 
-  <div class="row mb-4">
-    <div class="col-md-8">
+  <div class="row mb-4 gy-3 align-items-center">
+    <div class="col-12 col-md-8 text-center text-md-start">
       <h2 class="fw-bold text-dark mb-0">Zarządzanie Ofertą</h2>
-      <p class="text-muted">Konfiguruj parametry biletów i zarządzaj ich widocznością w aplikacji pasażera.</p>
+      <p class="text-muted small">Konfiguruj parametry biletów i ich widoczność.</p>
     </div>
-    <div class="col-md-4 d-flex align-items-center justify-content-end gap-3">
+    <div class="col-12 col-md-4 d-flex align-items-center justify-content-center justify-content-md-end gap-3">
       <div class="text-center px-3 border-end">
-        <div class="h4 fw-bold mb-0 text-success">{{ activeTicketsCount }}</div>
-        <small class="text-uppercase text-muted" style="font-size: 0.7rem;">Widoczne</small>
+        <div class="display-6 fw-bold mb-0 text-success">{{ activeTicketsCount }}</div>
+        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.65rem;">Widoczne</small>
       </div>
       <div class="text-center px-3">
-        <div class="h4 fw-bold mb-0 text-secondary">{{ hiddenTicketsCount }}</div>
-        <small class="text-uppercase text-muted" style="font-size: 0.7rem;">Ukryte</small>
+        <div class="display-6 fw-bold mb-0 text-secondary">{{ hiddenTicketsCount }}</div>
+        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.65rem;">Ukryte</small>
       </div>
     </div>
   </div>
@@ -20,9 +20,8 @@
   <div class="card shadow-sm border-0 mb-5 overflow-hidden">
     <div [ngClass]="newTicket.id !== 0 ? 'bg-warning' : 'bg-dark'" class="py-1"></div>
     <div class="card-body p-4 bg-white">
-      <div class="row g-4">
-
-        <div class="col-md-3">
+      <div class="row g-4 align-items-end">
+        <div class="col-12 col-md-3">
           <label class="form-label small fw-bold text-secondary text-uppercase">Kategoria biletu</label>
           <div class="input-group">
             <span class="input-group-text bg-light border-2 border-end-0"><i class="bi bi-tag-fill"></i></span>
@@ -34,57 +33,73 @@
           </div>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-6 col-md-2">
           <label class="form-label small fw-bold text-secondary text-uppercase">Cena (PLN)</label>
-          <input type="number" class="form-control border-2" [(ngModel)]="newTicket.price" placeholder="0.00" step="0.01">
+          <input type="number"
+                 class="form-control border-2"
+                 [(ngModel)]="newTicket.price"
+                 (keydown)="($event.key === '-' || $event.key === 'e') ? $event.preventDefault() : null"
+                 (input)="newTicket.price = newTicket.price < 0 ? 0 : newTicket.price"
+                 min="0"
+                 placeholder="0.00"
+                 step="0.01">
         </div>
 
-        <div class="col-md-2" *ngIf="newTicket.type !== 'SINGLE_RIDE_TICKET'">
+        <div class="col-6 col-md-2" *ngIf="newTicket.type !== 'SINGLE_RIDE_TICKET'">
           <label class="form-label small fw-bold text-secondary text-uppercase">Ważność</label>
           <div class="input-group">
-            <input type="number" class="form-control border-2 border-end-0" [(ngModel)]="newTicket.validityPeriod">
+            <input type="number"
+                   class="form-control border-2 border-end-0"
+                   [(ngModel)]="newTicket.validityPeriod"
+                   (keydown)="($event.key === '-' || $event.key === 'e') ? $event.preventDefault() : null"
+                   (input)="newTicket.validityPeriod = newTicket.validityPeriod < 0 ? 0 : newTicket.validityPeriod"
+                   min="0"
+                   placeholder="0"
+                   step="1">
             <span class="input-group-text bg-light border-2 border-start-0 text-muted fw-bold">
-              {{ newTicket.type === 'PERIODIC_TICKET' ? 'dni' : 'min' }}
-            </span>
+      {{ newTicket.type === 'PERIODIC_TICKET' ? 'dni' : 'min' }}
+    </span>
           </div>
         </div>
 
-        <div class="col-md-3 d-flex align-items-center justify-content-center mt-auto pb-2 gap-4">
-          <div class="form-check form-switch custom-switch">
-            <input class="form-check-input" type="checkbox" id="discountSwitch" [(ngModel)]="newTicket.discountAvailable">
-            <label class="form-check-label fw-bold small" for="discountSwitch">ULGA</label>
+        <div class="col-12 col-md-3 d-flex align-items-center justify-content-center gap-4 pb-2">
+          <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0" style="min-height: 0;">
+            <input class="form-check-input m-0" type="checkbox" id="discountSwitch" [(ngModel)]="newTicket.discountAvailable" style="cursor: pointer; width: 2.5em; height: 1.25em;">
+            <label class="form-check-label fw-bold small text-secondary" for="discountSwitch" style="cursor: pointer;">ULGA</label>
           </div>
-          <div class="form-check form-switch custom-switch">
-            <input class="form-check-input" type="checkbox" id="activeSwitch" [(ngModel)]="newTicket.active">
-            <label class="form-check-label fw-bold small" for="activeSwitch">AKTYWNY</label>
+          <div class="form-check form-switch d-flex align-items-center gap-2 m-0 p-0" style="min-height: 0;">
+            <input class="form-check-input m-0" type="checkbox" id="activeSwitch" [(ngModel)]="newTicket.active" style="cursor: pointer; width: 2.5em; height: 1.25em;">
+            <label class="form-check-label fw-bold small text-secondary" for="activeSwitch" style="cursor: pointer;">AKTYWNY</label>
           </div>
         </div>
 
-        <div class="col-md-2 d-flex align-items-end gap-2">
+        <div class="col-12 col-md-2 d-flex gap-2">
           <button class="btn w-100 fw-bold py-2 shadow-sm transition-btn"
                   [ngClass]="newTicket.id !== 0 ? 'btn-warning' : 'btn-primary'"
                   (click)="onCreateTicket()">
             {{ newTicket.id !== 0 ? 'ZAPISZ' : 'DODAJ' }}
           </button>
-          <button *ngIf="newTicket.id !== 0" class="btn btn-outline-secondary py-2" (click)="resetForm()" title="Anuluj edycję">
+          <button *ngIf="newTicket.id !== 0" class="btn btn-outline-secondary py-2" (click)="resetForm()">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
+      </div>
+      <div *ngIf="errorMessage" class="text-danger small fw-bold mt-3 animate__animated animate__shakeX">
+        <i class="bi bi-exclamation-circle-fill"></i> {{ errorMessage }}
       </div>
     </div>
   </div>
 
   <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
     <div class="card-body p-0">
-
-      <div *ngIf="successMessage" class="alert alert-success border-0 rounded-0 m-0 py-3">
+      <div *ngIf="successMessage" class="alert alert-success border-0 rounded-0 m-0 py-3 text-center">
         <i class="bi bi-check-circle-fill me-2"></i> {{ successMessage }}
       </div>
 
-      <div class="table-responsive">
+      <div class="table-responsive d-none d-md-block">
         <table class="table table-hover align-middle mb-0">
           <thead class="bg-primary bg-gradient text-white">
-          <tr class="text-uppercase small" style="letter-spacing: 1px;">
+          <tr class="text-uppercase small">
             <th class="ps-4 py-3">ID</th>
             <th>Typ biletu</th>
             <th>Cena</th>
@@ -96,42 +111,22 @@
           </thead>
           <tbody>
           <tr *ngFor="let ticket of tickets" [ngClass]="{'bg-light opacity-75': !ticket.active}">
-            <td class="ps-4">
-              <span class="badge bg-light text-dark border">#{{ ticket.id }}</span>
-            </td>
+            <td class="ps-4"><span class="badge bg-light text-dark border">#{{ ticket.id }}</span></td>
             <td>
               <div class="d-flex align-items-center">
-                <div class="icon-box me-3" [ngClass]="{
-                      'text-primary': ticket.type === 'SINGLE_RIDE_TICKET',
-                      'text-info': ticket.type === 'TIME_BASED_TICKET',
-                      'text-warning': ticket.type === 'PERIODIC_TICKET'
-                    }">
-                  <i class="bi" [ngClass]="{
-                        'bi-ticket-perforated': ticket.type === 'SINGLE_RIDE_TICKET',
-                        'bi-clock-history': ticket.type === 'TIME_BASED_TICKET',
-                        'bi-calendar-range': ticket.type === 'PERIODIC_TICKET'
-                      }"></i>
+                <div class="icon-box me-3 fs-4" [ngClass]="{'text-primary': ticket.type === 'SINGLE_RIDE_TICKET', 'text-info': ticket.type === 'TIME_BASED_TICKET', 'text-warning': ticket.type === 'PERIODIC_TICKET'}">
+                  <i class="bi" [ngClass]="{'bi-ticket-perforated': ticket.type === 'SINGLE_RIDE_TICKET', 'bi-clock-history': ticket.type === 'TIME_BASED_TICKET', 'bi-calendar-range': ticket.type === 'PERIODIC_TICKET'}"></i>
                 </div>
                 <div>
-                  <div class="fw-bold">{{
-                      ticket.type === 'SINGLE_RIDE_TICKET' ? 'Jednorazowy' :
-                        ticket.type === 'TIME_BASED_TICKET' ? 'Czasowy' : 'Okresowy'
-                    }}</div>
+                  <div class="fw-bold">{{ ticket.type === 'SINGLE_RIDE_TICKET' ? 'Jednorazowy' : ticket.type === 'TIME_BASED_TICKET' ? 'Czasowy' : 'Okresowy' }}</div>
                   <small class="text-muted" style="font-size: 0.75rem;">{{ ticket.type }}</small>
                 </div>
               </div>
             </td>
-            <td>
-              <span class="fs-5 fw-bold text-dark">{{ ticket.price | currency:'PLN':'symbol':'1.2-2' }}</span>
-            </td>
+            <td><span class="fs-5 fw-bold text-dark">{{ ticket.price | currency:'PLN' }}</span></td>
             <td>
               <div *ngIf="ticket.validityPeriod">
-                  <span *ngIf="ticket.type === 'TIME_BASED_TICKET'" class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
-                    <i class="bi bi-hourglass-split me-1"></i> {{ ticket.validityPeriod }} min
-                  </span>
-                <span *ngIf="ticket.type === 'PERIODIC_TICKET'" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
-                    <i class="bi bi-calendar-check me-1"></i> {{ ticket.validityPeriod }} dni
-                  </span>
+                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle"><i class="bi bi-hourglass-split me-1"></i> {{ ticket.validityPeriod }} min</span>
               </div>
               <span *ngIf="!ticket.validityPeriod" class="text-muted small italic">Bezterminowy</span>
             </td>
@@ -141,21 +136,52 @@
                 </span>
             </td>
             <td class="text-center">
-              <button (click)="toggleActive(ticket)"
-                      class="btn btn-sm badge-btn rounded-pill px-3 py-2 border-0 shadow-sm transition-all"
-                      [ngClass]="ticket.active ? 'btn-success' : 'btn-secondary'">
-                <i class="bi me-1" [ngClass]="ticket.active ? 'bi-eye-fill' : 'bi-eye-slash-fill'"></i>
-                {{ ticket.active ? 'WIDOCZNY' : 'UKRYTY' }}
+              <button (click)="toggleActive(ticket)" class="btn btn-sm rounded-pill px-3 py-2 border-0 shadow-sm transition-all" [ngClass]="ticket.active ? 'btn-success' : 'btn-secondary'">
+                <i class="bi me-1" [ngClass]="ticket.active ? 'bi-eye-fill' : 'bi-eye-slash-fill'"></i> {{ ticket.active ? 'WIDOCZNY' : 'UKRYTY' }}
               </button>
             </td>
             <td class="text-center pe-4">
-              <button class="btn btn-icon btn-outline-primary shadow-sm" (click)="editTicket(ticket)" title="Edytuj parametry">
-                <i class="bi bi-pencil-fill"></i>
-              </button>
+              <button class="btn btn-icon btn-outline-primary shadow-sm" (click)="editTicket(ticket)"><i class="bi bi-pencil-fill"></i></button>
             </td>
           </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="d-md-none">
+        <div *ngFor="let ticket of tickets" class="p-4 border-bottom position-relative" [ngClass]="{'bg-light opacity-75': !ticket.active}">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center">
+              <div class="icon-box me-3 fs-2" [ngClass]="{'text-primary': ticket.type === 'SINGLE_RIDE_TICKET', 'text-info': ticket.type === 'TIME_BASED_TICKET', 'text-warning': ticket.type === 'PERIODIC_TICKET'}">
+                <i class="bi" [ngClass]="{'bi-ticket-perforated': ticket.type === 'SINGLE_RIDE_TICKET', 'bi-clock-history': ticket.type === 'TIME_BASED_TICKET', 'bi-calendar-range': ticket.type === 'PERIODIC_TICKET'}"></i>
+              </div>
+              <div class="fw-bold fs-4">{{ ticket.type === 'SINGLE_RIDE_TICKET' ? 'Jednorazowy' : ticket.type === 'TIME_BASED_TICKET' ? 'Czasowy' : 'Okresowy' }}</div>
+            </div>
+            <span class="badge bg-white text-dark border fs-6 px-3">#{{ ticket.id }}</span>
+          </div>
+
+          <div class="row align-items-center g-2 mb-4">
+            <div class="col-6">
+              <div class="display-6 fw-bold text-primary">{{ ticket.price | currency:'PLN' }}</div>
+            </div>
+            <div class="col-6 text-end">
+              <div *ngIf="ticket.validityPeriod">
+                <span class="badge bg-primary bg-gradient fs-6 px-3 py-2"><i class="bi bi-clock-fill me-2"></i>{{ ticket.validityPeriod }}{{ ticket.type === 'PERIODIC_TICKET' ? ' dni' : ' min' }}</span>
+              </div>
+              <div class="mt-2 d-flex align-items-center justify-content-end">
+                <span class="fw-bold text-uppercase text-muted me-2" style="font-size: 0.75rem;">Ulga:</span>
+                <i class="bi fs-2" [ngClass]="ticket.discountAvailable ? 'bi-patch-check-fill text-success' : 'bi-dash-circle text-muted'"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary flex-grow-1 fw-bold py-3" (click)="editTicket(ticket)">EDYTUJ</button>
+            <button class="btn flex-grow-1 fw-bold py-3" [ngClass]="ticket.active ? 'btn-secondary' : 'btn-success'" (click)="toggleActive(ticket)">
+              {{ ticket.active ? 'UKRYJ' : 'POKAŻ' }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

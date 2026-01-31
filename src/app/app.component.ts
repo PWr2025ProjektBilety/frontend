@@ -42,11 +42,13 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     if (this.authService.isLoggedIn && this.authService.isUser) {
       this.loadPointsBalance();
-
-      this.pointsUpdateSubscription = this.bonusService.getPointsUpdateListener().subscribe(() => {
-        this.loadPointsBalance();
-      });
     }
+
+    this.pointsUpdateSubscription = this.bonusService.getPointsUpdateListener().subscribe(() => {
+      if (this.authService.isLoggedIn && this.authService.isUser) {
+        this.loadPointsBalance();
+      }
+    });
   }
 
   private loadPointsBalance(): void {

@@ -1,0 +1,20 @@
+.fw-black {
+  font-weight: 900 !important;
+}
+
+.ticket-item-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.05) !important;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important;
+  }
+}
+
+// Zapewniamy, że cena nie wyjdzie poza obszar nawet na małych ekranach
+.price-value {
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}

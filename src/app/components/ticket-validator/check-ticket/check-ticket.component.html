@@ -1,51 +1,121 @@
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Sprawdź bilet</h2>
+<div class="container-mobile mt-2 mt-md-5 mb-5">
+  <div class="text-center mb-3 mb-md-4">
+    <h2 class="fw-bold text-dark mb-0 header-title">Weryfikacja Biletów</h2>
+    <p class="text-muted small text-uppercase fw-bold pt-2 mb-0 header-subtitle">
+      <i class="bi bi-shield-check me-1 text-primary"></i> Panel Kontrolerski
+    </p>
+  </div>
 
-  <div class="card shadow-sm p-4 mx-auto" style="max-width: 520px;">
-    <div *ngIf="resultMessage" class="alert text-center"
-         [ngClass]="{
-       'alert-success': resultType === 'success',
-       'alert-danger': resultType === 'danger',
-       'alert-warning': resultType === 'warning',
-       'alert-info': resultType === 'info'
-     }">
-      {{ resultMessage }}
-    </div>
+  <div class="card shadow-lg border-0 rounded-4 overflow-hidden mx-auto inspector-card">
+    <div class="bg-primary bg-gradient py-1"></div>
 
-    <div class="scanner">
-      <video #video playsinline autoplay muted></video>
-    </div>
+    <div class="card-body p-3 p-md-4">
 
-    <div class="d-grid gap-2 mt-3">
-      <button
-        type="button"
-        class="btn btn-primary"
-        (click)="startScanner()"
-        [disabled]="startingScanner || !vehicleId?.trim()"
-      >
-        Uruchom kamerę
-      </button>
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        (click)="stopScanner()"
-        [disabled]="!scannerActive"
-      >
-        Zatrzymaj
-      </button>
-    </div>
+      <div *ngIf="resultMessage" class="alert text-center border-0 animate__animated animate__zoomIn mb-3 result-alert"
+           [ngClass]="{
+             'alert-success shadow-sm text-success fw-bold': resultType === 'success',
+             'alert-danger shadow-sm text-danger fw-bold': resultType === 'danger',
+             'alert-warning shadow-sm text-warning-emphasis fw-bold': resultType === 'warning',
+             'alert-info shadow-sm text-info-emphasis fw-bold': resultType === 'info'
+           }">
+        <i class="bi me-2 alert-icon" [ngClass]="{
+          'bi-check-circle-fill': resultType === 'success',
+          'bi-x-circle-fill': resultType === 'danger',
+          'bi-exclamation-triangle-fill': resultType === 'warning',
+          'bi-info-circle-fill': resultType === 'info'
+        }"></i>
+        <span class="alert-text">{{ resultMessage }}</span>
+      </div>
 
-    <div class="mt-3">
-      <label for="vehicleId" class="form-label">Numer pojazdu</label>
-      <input
-        id="vehicleId"
-        class="form-control"
-        [(ngModel)]="vehicleId"
-        (ngModelChange)="onVehicleIdChange()"
-        placeholder="Np. 123"
-        maxlength="6"
-      />
-      <div class="form-text">Po wpisaniu numeru pojazdu możesz uruchomić kamerę.</div>
+      <div class="scanner-container rounded-4 overflow-hidden bg-dark position-relative border border-2 border-primary border-opacity-25 shadow-inner mb-3">
+        <video #video playsinline autoplay muted class="w-100 h-100"></video>
+
+        <div *ngIf="scannerActive" class="scanner-overlay d-flex align-items-center justify-content-center">
+          <div class="scanner-target border border-primary border-4 opacity-75 animate__animated animate__pulse animate__infinite"></div>
+        </div>
+
+        <div *ngIf="!scannerActive" class="position-absolute top-50 start-50 translate-middle text-white text-center opacity-50 w-100">
+          <i class="bi bi-camera-video-off camera-placeholder-icon"></i>
+          <p class="small mt-2 fw-bold text-uppercase camera-placeholder-text">Kamera oczekuje na start</p>
+        </div>
+      </div>
+
+      <div class="row g-2 g-md-3 mt-2">
+        <div class="col-6">
+          <button type="button" class="btn btn-primary w-100 fw-bold py-3 py-md-4 rounded-4 shadow d-flex flex-column align-items-center justify-content-center control-btn"
+                  (click)="startScanner()" [disabled]="startingScanner || !vehicleId?.trim()">
+            <i class="bi bi-qr-code-scan btn-icon-lg mb-1"></i>
+            <span class="btn-text">Uruchom kamerę</span>
+          </button>
+        </div>
+        <div class="col-6">
+          <button type="button" class="btn btn-danger w-100 fw-bold py-3 py-md-4 rounded-4 shadow-sm d-flex flex-column align-items-center justify-content-center control-btn"
+                  (click)="stopScanner()" [disabled]="!scannerActive">
+            <i class="bi bi-stop-circle btn-icon-lg mb-1"></i>
+            <span class="btn-text">Stop</span>
+          </button>
+        </div>
+      </div>
+
+      <hr class="my-3 my-md-4 opacity-10">
+
+      <div class="mb-3 mb-md-4">
+        <label for="vehicleId" class="form-label small fw-bold text-secondary text-uppercase mb-2 input-label">Numer pojazdu</label>
+        <div class="input-group input-group-mobile">
+          <span class="input-group-text bg-light border-2 border-end-0 text-primary">
+            <i class="bi bi-bus-front-fill"></i>
+          </span>
+          <input id="vehicleId"
+                 class="form-control border-2 border-start-0 ps-0 fw-normal vehicle-input"
+                 [(ngModel)]="vehicleId"
+                 (ngModelChange)="onVehicleIdChange()"
+                 placeholder="Wpisz nr boczny"
+                 maxlength="6" />
+        </div>
+      </div>
+
+      <div class="p-3 bg-light rounded-4 border border-white shadow-sm mb-3 mb-md-4">
+        <label for="manualTicketCode" class="form-label small fw-bold text-secondary text-uppercase mb-2 input-label">Weryfikacja ręczna</label>
+        <div class="input-group shadow-sm rounded-pill overflow-hidden bg-white border-2 border manual-input-group">
+          <input id="manualTicketCode"
+                 class="form-control border-0 ps-3 fw-normal manual-input"
+                 [(ngModel)]="manualTicketCode"
+                 placeholder="Kod (np. ABCD1234)" />
+          <button class="btn btn-dark px-3 px-md-4 fw-bold" (click)="checkTicketManually()" [disabled]="manualChecking || !manualTicketCode?.trim() || !vehicleId?.trim()">
+            <i class="bi bi-search search-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-3 border border-warning border-opacity-50 rounded-4 bg-warning bg-opacity-10 shadow-sm lock-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="fw-bold text-dark lock-title">
+              <i class="bi bi-lock-fill me-1 text-warning"></i>Blokada
+            </div>
+            <div class="small" *ngIf="vehicleId?.trim()">
+              <span [class.text-danger]="vehicleLocked" [class.text-success]="!vehicleLocked" class="fw-bold text-uppercase lock-status">
+                {{ vehicleLocked ? 'Zablokowane' : 'Aktywne' }}
+              </span>
+            </div>
+          </div>
+          <select class="form-select form-select-sm border-2 rounded-pill w-auto fw-bold lock-select" [(ngModel)]="lockDurationMinutes" [disabled]="lockLoading || vehicleLocked">
+            <option [ngValue]="15">15m</option>
+            <option [ngValue]="20">20m</option>
+            <option [ngValue]="30">30m</option>
+          </select>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button *ngIf="!vehicleLocked" type="button" class="btn btn-warning fw-bold py-3 rounded-pill shadow-sm lock-btn" (click)="lockVehicleValidation()" [disabled]="lockLoading || !vehicleId?.trim()">
+            ZABLOKUJ KASOWNIKI
+          </button>
+          <button *ngIf="vehicleLocked" type="button" class="btn btn-danger fw-bold py-3 rounded-pill shadow-sm lock-btn" (click)="unlockVehicleValidation()" [disabled]="lockLoading || !vehicleId?.trim()">
+            ODBLOKUJ ({{ lockRemainingSeconds }}s)
+          </button>
+        </div>
+        </div>
+
     </div>
   </div>
 </div>

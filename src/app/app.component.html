@@ -1,58 +1,54 @@
 <div class="d-flex flex-column min-vh-100 pt-5">
   <!-- Header -->
-  <header id="main-header" class="bg-primary text-white py-3 shadow-sm fixed-top transition-top">
-  <div class="container d-flex justify-content-between align-items-center">
-      <h1 class="h5 m-0">
-        <a routerLink="/" class="text-white text-decoration-none">🎫 Elektroniczny Bilet Miejski</a>
-      </h1>
-      <nav>
-        <ul class="nav">
+  <header id="main-header" class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
+    <div class="container">
+      <a routerLink="/" class="navbar-brand fw-bold">
+        🎫 Elektroniczny Bilet Miejski
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto text-center text-lg-start">
+
           <li *ngIf="!authService.isLoggedIn" class="nav-item">
-            <a class="nav-link text-white" routerLink="/login" routerLinkActive="active-link">
-              Logowanie
-            </a>
+            <a class="nav-link" routerLink="/login" routerLinkActive="active-link">Logowanie</a>
           </li>
-          <li *ngIf="!authService.isLoggedIn " class="nav-item">
-            <a class="nav-link text-white" routerLink="/register" routerLinkActive="active-link">
-              Rejestracja
-            </a>
+          <li *ngIf="!authService.isLoggedIn" class="nav-item">
+            <a class="nav-link" routerLink="/register" routerLinkActive="active-link">Rejestracja</a>
+          </li>
+
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
+            <a class="nav-link" routerLink="/tickets" routerLinkActive="active-link">Moje bilety</a>
           </li>
           <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
-            <a class="nav-link text-white" routerLink="/tickets" routerLinkActive="active-link">
-              Moje bilety
-            </a>
+            <a class="nav-link" routerLink="/offer" routerLinkActive="active-link">Oferty</a>
           </li>
-          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item points-container">
-            <span class="points-text">{{ pointsBalance }} points</span>
-            <span class="points-icon">⭐ {{ pointsBalance }}</span>
+
+          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item py-2 px-lg-3 text-warning fw-bold">
+            ⭐ {{ pointsBalance }} pts
           </li>
-          <li *ngIf="authService.isLoggedIn && authService.isUser" class="nav-item">
-            <a class="nav-link text-white" routerLink="/offer" routerLinkActive="active-link">
-              Oferty biletowe
-            </a>
-          </li>
+
           <li *ngIf="authService.isLoggedIn && authService.isController" class="nav-item">
-            <a class="nav-link text-white" routerLink="/check-ticket" routerLinkActive="active-link">
-              Sprawdź bilet
-            </a>
+            <a class="nav-link" routerLink="/check-ticket" routerLinkActive="active-link">Sprawdź bilet</a>
           </li>
           <li *ngIf="authService.isLoggedIn && authService.isAdmin" class="nav-item">
-            <a class="nav-link text-white" routerLink="/manage-users" routerLinkActive="active-link">
-              Zarządzaj rolami
-            </a>
+            <a class="nav-link" routerLink="/manage-users" routerLinkActive="active-link">Użytkownicy</a>
           </li>
           <li *ngIf="authService.isLoggedIn && authService.isAdmin" class="nav-item">
-            <a class="nav-link text-white" routerLink="/manage-tickets" routerLinkActive="active-link">
-              Zarządzaj ofertą
-            </a>
+            <a class="nav-link" routerLink="/manage-tickets" routerLinkActive="active-link">Oferta</a>
           </li>
-          <li *ngIf="authService.isLoggedIn" class="nav-item">
-            <a class="nav-link text-white" href="#" (click)="authService.logout()">
+
+          <li *ngIf="authService.isLoggedIn" class="nav-item border-top border-light mt-2 mt-lg-0 pt-2 pt-lg-0 ms-lg-2">
+            <a class="nav-link btn btn-outline-light btn-sm text-white px-3" href="#" (click)="authService.logout()">
               Wyloguj się
             </a>
           </li>
         </ul>
-      </nav>
+      </div>
     </div>
   </header>
 

@@ -1,48 +1,68 @@
-<h1 class="text-center">Logowanie</h1>
-<form (ngSubmit)="onLogin()" class="w-25 mx-auto mt-4 p-4 border rounded">
-
-  <div class="mb-3">
-    <label for="loginUsername" class="form-label">Nazwa użytkownika</label>
-    <input
-      type="text"
-      id="loginUsername"
-      name="username"
-      required
-      maxlength="20"
-      [(ngModel)]="username"
-      (ngModelChange)="clearMessage()"
-      placeholder="Wpisz nazwę użytkownika..."
-      [class.is-invalid]="message"
-    class="form-control"
-    />
+<div class="container">
+  <div class="row">
+    <div class="col-12 text-center mt-5">
+      <i class="bi bi-ticket-perforated text-primary mb-2" style="font-size: 3.5rem;"></i>
+      <h1 class="fw-bold">Zaloguj się</h1>
+      <p class="text-muted">Elektroniczny Bilet Miejski</p>
+    </div>
   </div>
 
-  <div class="mb-3">
-    <label for="loginPassword" class="form-label">Hasło</label>
-    <input
-      type="password"
-      id="loginPassword"
-      name="password"
-      required
-      maxlength="30"
-      [(ngModel)]="password"
-      (ngModelChange)="clearMessage()"
-      placeholder="Wpisz hasło..."
-      [class.is-invalid]="message"
-      class="form-control"
-    />
-  </div>
+  <form (ngSubmit)="onLogin()" class="auth-container border rounded shadow-sm bg-white">
 
-  <div *ngIf="message" class="text-danger mb-3">
-    {{ message }}
-  </div>
+    <div class="mb-3">
+      <label for="loginUsername" class="form-label fw-semibold">Nazwa użytkownika</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light text-secondary">
+          <i class="bi bi-person"></i>
+        </span>
+        <input
+          type="text"
+          id="loginUsername"
+          name="username"
+          required
+          [(ngModel)]="username"
+          class="form-control"
+          placeholder="Wpisz nazwę użytkownika..."
+        />
+      </div>
+    </div>
 
-  <button
-    type="submit"
-    class="btn btn-primary w-100"
-    [disabled]="!username || !password"
-  >
-    Zaloguj się
-  </button>
+    <div class="mb-4">
+      <label for="loginPassword" class="form-label fw-semibold">Hasło</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light text-secondary">
+          <i class="bi bi-lock"></i>
+        </span>
+        <input
+          type="password"
+          id="loginPassword"
+          name="password"
+          required
+          [(ngModel)]="password"
+          class="form-control"
+          placeholder="Wpisz hasło..."
+        />
+      </div>
+    </div>
 
-</form>
+    <div *ngIf="message" class="alert alert-danger py-2 d-flex align-items-center" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <div>{{ message }}</div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary w-100 py-2 shadow-sm"
+      [disabled]="!username || !password"
+    >
+      Zaloguj się
+    </button>
+
+    <div class="text-center mt-4 pt-2 border-top">
+      <small class="text-muted">
+        Nie masz konta?
+        <a routerLink="/register" class="text-decoration-none fw-bold text-primary">Zarejestruj się</a>
+      </small>
+    </div>
+  </form>
+</div>

@@ -1,64 +1,84 @@
-<h1 class="text-center">Rejestracja</h1>
-<form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm" novalidate class="w-25 mx-auto mt-4 p-4 border rounded">
-
-  <div class="mb-3">
-    <label for="username" class="form-label">Nazwa użytkownika</label>
-    <input
-      id="username"
-      name="username"
-      type="text"
-      [(ngModel)]="username"
-      (ngModelChange)="clearMessage()"
-      #usernameInput="ngModel"
-      required
-      minlength="4"
-      maxlength="20"
-      pattern="^[a-zA-Z0-9]+$"
-      placeholder="Wpisz nazwę użytkownika..."
-      class="form-control"
-      [class.is-invalid]="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)"
-      [class.is-valid]="usernameInput.valid && (usernameInput.dirty || usernameInput.touched)"
-    />
-    <div *ngIf="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)" class="invalid-feedback">
-      <div *ngIf="usernameInput.errors?.['required']">Nazwa użytkownika jest wymagana.</div>
-      <div *ngIf="usernameInput.errors?.['minlength']">Nazwa użytkownika musi mieć co najmniej 4 znaki.</div>
-      <div *ngIf="usernameInput.errors?.['pattern']">Nazwa użytkownika może zawierać tylko litery i cyfry.</div>
+<div class="container">
+  <div class="row">
+    <div class="col-12 text-center mt-5">
+      <i class="bi bi-person-plus text-primary" style="font-size: 3rem;"></i>
+      <h1 class="fw-bold">Utwórz konto</h1>
+      <p class="text-muted">Dołącz do użytkowników Biletu Miejskiego</p>
     </div>
   </div>
 
-  <div class="mb-3">
-    <label for="password" class="form-label">Hasło</label>
-    <input
-      id="password"
-      name="password"
-      type="password"
-      [(ngModel)]="password"
-      (ngModelChange)="clearMessage()"
-      #passwordInput="ngModel"
-      required
-      minlength="8"
-      maxlength="30"
-      pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
-      placeholder="Wpisz hasło..."
-      class="form-control"
-      [class.is-invalid]="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
-      [class.is-valid]="passwordInput.valid && (passwordInput.dirty || passwordInput.touched)"
-      title="Hasło musi mieć co najmniej 8 znaków, zawierać jedną wielką literę, jedną cyfrę oraz jeden znak specjalny."
-    />
-    <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="invalid-feedback">
-      <div *ngIf="passwordInput.errors?.['required']">Hasło jest wymagane.</div>
-      <div *ngIf="passwordInput.errors?.['minlength']">Hasło musi mieć co najmniej 8 znaków.</div>
-      <div *ngIf="passwordInput.errors?.['pattern']">
-        Hasło musi zawierać wielką literę, cyfrę oraz znak specjalny.
+  <form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm" novalidate class="auth-container border rounded shadow-sm">
+
+    <div class="mb-3">
+      <label for="username" class="form-label fw-semibold">Nazwa użytkownika</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          [(ngModel)]="username"
+          (ngModelChange)="clearMessage()"
+          #usernameInput="ngModel"
+          required
+          minlength="4"
+          maxlength="20"
+          pattern="^[a-zA-Z0-9]+$"
+          placeholder="Min. 4 znaki (litery i cyfry)"
+          class="form-control"
+          [class.is-invalid]="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)"
+          [class.is-valid]="usernameInput.valid && (usernameInput.dirty || usernameInput.touched)"
+        />
+        <div *ngIf="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)" class="invalid-feedback">
+          <small *ngIf="usernameInput.errors?.['required']">Nazwa jest wymagana.</small>
+          <small *ngIf="usernameInput.errors?.['minlength']">Minimum 4 znaki.</small>
+          <small *ngIf="usernameInput.errors?.['pattern']">Tylko litery i cyfry.</small>
+        </div>
       </div>
     </div>
-  </div>
 
-  <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">
-    Zarejestruj się
-  </button>
+    <div class="mb-4">
+      <label for="password" class="form-label fw-semibold">Hasło</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          [(ngModel)]="password"
+          (ngModelChange)="clearMessage()"
+          #passwordInput="ngModel"
+          required
+          minlength="8"
+          maxlength="30"
+          pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+          placeholder="Wielka litera, cyfra, znak specjalny"
+          class="form-control"
+          [class.is-invalid]="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
+          [class.is-valid]="passwordInput.valid && (passwordInput.dirty || passwordInput.touched)"
+        />
+        <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="invalid-feedback">
+          <small *ngIf="passwordInput.errors?.['required']">Hasło jest wymagane.</small>
+          <small *ngIf="passwordInput.errors?.['minlength']">Minimum 8 znaków.</small>
+          <small *ngIf="passwordInput.errors?.['pattern']">Musi mieć dużą literę, cyfrę i znak specjalny.</small>
+        </div>
+      </div>
+    </div>
 
-  <p *ngIf="message" [style.color]="message.includes('pomyślnie') ? 'green' : 'orange'" class="mt-3 fw-semibold">
-    {{ message }}
-  </p>
-</form>
+    <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm" [disabled]="registerForm.invalid">
+      Zarejestruj się
+    </button>
+
+    <div *ngIf="message"
+         class="mt-3 alert"
+         [ngClass]="message.includes('pomyślnie') ? 'alert-success' : 'alert-warning'">
+      <i class="bi" [ngClass]="message.includes('pomyślnie') ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'"></i>
+      {{ message }}
+    </div>
+
+    <div class="text-center mt-4">
+      <small class="text-muted">Masz już konto? <a routerLink="/login" class="text-decoration-none fw-bold">Zaloguj się</a></small>
+    </div>
+
+  </form>
+</div>
