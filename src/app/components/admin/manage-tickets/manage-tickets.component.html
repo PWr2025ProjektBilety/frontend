@@ -126,7 +126,11 @@
             <td><span class="fs-5 fw-bold text-dark">{{ ticket.price | currency:'PLN' }}</span></td>
             <td>
               <div *ngIf="ticket.validityPeriod">
-                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle"><i class="bi bi-hourglass-split me-1"></i> {{ ticket.validityPeriod }} min</span>
+                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
+                  <i class="bi" [ngClass]="ticket.type === 'PERIODIC_TICKET' ? 'bi-calendar-event' : 'bi-hourglass-split'"></i>
+                  {{ ticket.validityPeriod }}
+                  {{ ticket.type === 'PERIODIC_TICKET' ? 'dni' : 'min' }}
+                </span>
               </div>
               <span *ngIf="!ticket.validityPeriod" class="text-muted small italic">Bezterminowy</span>
             </td>
