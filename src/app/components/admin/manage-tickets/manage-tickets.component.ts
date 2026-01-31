@@ -14,7 +14,6 @@ import { NgClass, NgIf, NgFor, CurrencyPipe } from '@angular/common';
 export class ManageTicketsComponent implements OnInit {
   tickets: Ticket[] = [];
 
-  // Inicjalizacja formularza
   newTicket: any = this.getDefaultTicket();
 
   successMessage = '';
@@ -28,7 +27,9 @@ export class ManageTicketsComponent implements OnInit {
 
   loadTickets(): void {
     this.ticketService.getAllTicketsForAdmin().subscribe({
-      next: (data) => this.tickets = data,
+      next: (data) => {
+        this.tickets = data.sort((a, b) => a.id - b.id);
+      },
       error: () => this.errorMessage = 'Błąd podczas pobierania ofert.'
     });
   }

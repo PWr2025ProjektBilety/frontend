@@ -25,7 +25,9 @@ export class ManageUsersComponent implements OnInit {
 
   loadUsers(): void {
     this.authService.getAllUsers().subscribe({
-      next: (data) => this.users = data,
+      next: (data) => {
+        this.users = data.sort((a: any, b: any) => a['id'] - b['id']);
+      },
       error: () => this.errorMessage = 'Błąd pobierania danych.'
     });
   }
