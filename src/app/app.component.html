@@ -1,18 +1,18 @@
-<div class="d-flex flex-column min-vh-100 pt-5">
-  <!-- Header -->
+<div class="d-flex flex-column min-vh-100">
   <header id="main-header" class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
     <div class="container">
       <a routerLink="/" class="navbar-brand fw-bold">
         🎫 Elektroniczny Bilet Miejski
       </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      <button #navbarToggler class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto text-center text-lg-start">
+      <div class="collapse navbar-collapse" id="navbarNav" #navbarNav>
+        <ul class="navbar-nav ms-auto text-center text-lg-start"
+            (click)="navbarNav.classList.contains('show') ? navbarToggler.click() : null">
 
           <li *ngIf="!authService.isLoggedIn" class="nav-item">
             <a class="nav-link" routerLink="/login" routerLinkActive="active-link">Logowanie</a>
@@ -43,7 +43,7 @@
           </li>
 
           <li *ngIf="authService.isLoggedIn" class="nav-item border-top border-light mt-2 mt-lg-0 pt-2 pt-lg-0 ms-lg-2">
-            <a class="nav-link btn btn-outline-light btn-sm text-white px-3" href="#" (click)="authService.logout()">
+            <a class="nav-link btn btn-outline-light btn-sm text-white px-3" (click)="authService.logout()">
               Wyloguj się
             </a>
           </li>
@@ -52,8 +52,7 @@
     </div>
   </header>
 
-  <!-- Treść główna -->
-  <main class="flex-grow-1 py-4 container mt-5">
+  <main class="flex-grow-1 py-4 container" style="margin-top: 80px;">
     <div class="container">
       <router-outlet></router-outlet>
     </div>
