@@ -1,31 +1,28 @@
-import {Component, OnInit} from '@angular/core';
+import { QRCodeSVG } from '@akamfoad/qrcode';
+import { Component, OnInit } from '@angular/core';
 import {
-  PurchasedTicketDTO, PurchasedTicketPeriodicDTO,
+  PurchasedTicketDTO,
+  PurchasedTicketPeriodicDTO,
   PurchasedTicketSingleBasedDTO,
   PurchasedTicketTimeBasedDTO
 } from '../../../models/ticket.model';
-import {DatePipe, NgClass, NgForOf, NgIf} from '@angular/common';
-import {TicketService} from '../../../services/ticket.service';
-import {FormsModule} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import { DatePipe, DecimalPipe, NgClass, NgForOf, NgIf } from '@angular/common';
+import { TicketService } from '../../../services/ticket.service';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-tickets',
-  imports: [
-    DatePipe,
-    NgIf,
-    NgForOf,
-    NgClass,
-    FormsModule
-  ],
+  standalone: true,
+  imports: [DatePipe, NgIf, NgForOf, NgClass, FormsModule, DecimalPipe],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.scss'
 })
 export class TicketsComponent implements OnInit {
   tickets: PurchasedTicketDTO[] = [];
   message: string | null = null;
-  selectedTicket: PurchasedTicketDTO | null = null;
-  selectedTicketDetails: PurchasedTicketDTO | null = null;
+  selectedTicket: any = null;
+  selectedTicketDetails: any = null;
   vehicleIdInput: string = '';
   messageTimeout: any;
   page = 0;
@@ -36,149 +33,109 @@ export class TicketsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
-      console.log(data);
-      this.tickets = data['ticketData'].content;
-      this.totalPages = data['ticketData'].totalPages;
+      this.updateTicketsData(data['ticketData']);
     });
+  }
+
+  updateTicketsData(res: any) {
+    this.tickets = res.content;
+    this.totalPages = res.totalPages;
   }
 
   loadTickets() {
     this.ticketService.getTicketHistory(this.page, this.size).subscribe({
-      next: (res) => {
-        this.tickets = res.content;
-        this.totalPages = res.totalPages;
-        console.log(res)
-      },
-      error: (err) => {
-        this.message = 'Nie udało się załadować historii biletów.';
-        console.error(err);
-      }
+      next: (res) => this.updateTicketsData(res),
+      error: () => this.showMessage('Nie udało się załadować historii biletów.')
     });
   }
 
-  previousPage() {
-    if (this.page > 0) {
-      this.page--;
-      this.loadTickets();
-    }
+
+  isValidated(ticket: any): boolean {
+    return !!ticket?.validated;
   }
 
-  nextPage() {
-    if (this.page < this.totalPages - 1) {
-      this.page++;
-      this.loadTickets();
-    }
-  }
-
-  get pages(): number[] {
-    return Array(this.totalPages).fill(0).map((_, i) => i);
-  }
-
-  goToPage(p: number) {
-    if (p >= 0 && p < this.totalPages) {
-      this.page = p;
-      this.loadTickets();
-    }
-  }
-
-  isSingle(ticket: PurchasedTicketDTO): ticket is PurchasedTicketSingleBasedDTO {
-    return 'vehicleId' in ticket;
-  }
-
-  isTimeBased(ticket: PurchasedTicketDTO): ticket is PurchasedTicketTimeBasedDTO {
-    return 'validationDate' in ticket && 'expirationDate' in ticket;
-  }
-
-  isPeriodic(ticket: PurchasedTicketDTO): ticket is PurchasedTicketPeriodicDTO {
-    return 'validFrom' in ticket && 'validTo' in ticket;
-  }
-
-  getCardClass(ticket: PurchasedTicketDTO): string {
+  isTicketExpired(ticket: any): boolean {
     const now = new Date();
+    if (ticket?.expirationDate && new Date(ticket.expirationDate) < now) return true;
+    if (ticket?.validTo && new Date(ticket.validTo) < now) return true;
+    // Bilety jednorazowe po skasowaniu są technicznie "zużyte"
+    if (this.isSingle(ticket) && ticket.validated) return false; // Tutaj decydujesz czy skasowany = czerwony
+    return false;
+  }
 
-    if (this.isSingle(ticket)) {
-      return ticket.validated ? 'bg-success-subtle' : 'bg-warning-subtle';
+  getTicketColor(ticket: any): string {
+    if (this.isTicketExpired(ticket)) return '#f8d7da'; // Pastelowy czerwony
+    if (this.isValidated(ticket) || this.isPeriodicActive(ticket)) return '#d1e7dd'; // Pastelowy zielony
+    return '#fff3cd'; // Pastelowy żółty
+  }
+
+  isPeriodicActive(ticket: any): boolean {
+    if (!this.isPeriodic(ticket)) return false;
+    const now = new Date();
+    return new Date(ticket.validFrom) <= now && now <= new Date(ticket.validTo);
+  }
+
+  isSingle(ticket: any): boolean { return 'vehicleId' in ticket; }
+  isTimeBased(ticket: any): boolean { return 'validationDate' in ticket; }
+  isPeriodic(ticket: any): boolean { return 'validFrom' in ticket; }
+
+  getCodeDataUrl(payload: string): string {
+    try {
+      const qrCode = new QRCodeSVG(payload, { level: 'H' });
+      return qrCode.toDataUrl() ?? '';
+    } catch (e) {
+      return '';
     }
+  }
 
-    if (this.isTimeBased(ticket)) {
-      if (!ticket.validated) {
-        return 'bg-warning-subtle';
-      } else if (new Date(ticket.expirationDate) > now) {
-        return 'bg-success-subtle';
-      } else {
-        return 'bg-light';
-      }
-    }
-
-    if (this.isPeriodic(ticket)) {
-      const validFrom = new Date(ticket.validFrom);
-      const validTo = new Date(ticket.validTo);
-      if (validFrom <= now && now <= validTo) {
-        return 'bg-success-subtle';
-      } else {
-        return 'bg-light';
-      }
-    }
-
-    return 'bg-light';
+  getTicketQrPayload(ticket: any): string {
+    return ticket?.qrPayload || ticket?.code || '';
   }
 
   validateTicket() {
-    if (!this.selectedTicket || !this.vehicleIdInput.trim()) {
-      return;
-    }
+    if (!this.selectedTicket || !this.vehicleIdInput.trim()) return;
 
     this.ticketService.validateTicket(this.selectedTicket.code, this.vehicleIdInput.trim()).subscribe({
       next: () => {
-        this.message = 'Bilet został skasowany.';
-        this.showMessage(this.message)
         this.selectedTicket = null;
         this.vehicleIdInput = '';
+        this.showMessage("Bilet został pomyślnie skasowany!");
         this.loadTickets();
       },
-      error: err => {
-        this.message = 'Nie udało się skasować biletu.'
-        this.showMessage(this.message)
-        console.error(err);
+      error: (err) => {
+        let errorMessage = 'Nie udało się skasować biletu.';
+
+        if (err.status === 400 && err.error) {
+          errorMessage = 'Nie można skasować biletu! W danym pojeździe trwa kontrola.'
+        }
+
+        this.showMessage(errorMessage);
+        this.selectedTicket = null;
+        this.vehicleIdInput = '';
+        console.error('Validation error:', err);
       }
     });
   }
 
-  openValidationPopup(ticket: PurchasedTicketDTO) {
+  openValidationPopup(ticket: any) {
     this.selectedTicket = ticket;
+    this.selectedTicketDetails = null;
     this.vehicleIdInput = '';
   }
 
-  cancelValidation() {
-    this.selectedTicket = null;
-    this.vehicleIdInput = '';
-  }
+  cancelValidation() { this.selectedTicket = null; }
+  showDetails(ticket: any) { this.selectedTicketDetails = ticket; }
+  closeDetails() { this.selectedTicketDetails = null; }
 
   showMessage(msg: string) {
     this.message = msg;
-
-    if (this.messageTimeout) {
-      clearTimeout(this.messageTimeout);
-    }
-
-    this.messageTimeout = setTimeout(() => {
-      this.message = null;
-    }, 5000);
+    if (this.messageTimeout) clearTimeout(this.messageTimeout);
+    this.messageTimeout = setTimeout(() => this.message = null, 5000);
   }
 
-  closeMessage() {
-    this.message = null;
-    if (this.messageTimeout) {
-      clearTimeout(this.messageTimeout);
-    }
-  }
-
-  showDetails(ticket: any): void {
-    this.selectedTicketDetails = ticket;
-  }
-
-  closeDetails(): void {
-    this.selectedTicketDetails = null;
-  }
-
+  closeMessage() { this.message = null; }
+  goToPage(p: number) { this.page = p; this.loadTickets(); }
+  previousPage() { if (this.page > 0) this.goToPage(this.page - 1); }
+  nextPage() { if (this.page < this.totalPages - 1) this.goToPage(this.page + 1); }
+  get pages(): number[] { return Array(this.totalPages).fill(0).map((_, i) => i); }
 }

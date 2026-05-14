@@ -19,4 +19,11 @@
     <p class="fs-5">Cześć, kontrolerze {{ currentUser?.username }}!</p>
     <p>Możesz przejść do zakładki <strong>Sprawdź bilet</strong>, aby zweryfikować ważność biletów.</p>
   </div>
+
+  <!-- Dla admina -->
+  <div *ngIf="isLoggedIn && authService.isAdmin">
+    <p class="fs-5">Witaj w panelu administracyjnym, {{ currentUser?.username }}!</p>
+    <p>Masz dostęp do zarządzania systemem. Możesz edytować ofertę biletową oraz zarządzać użytkownikami.</p>
+    <p>Użyj menu nawigacji, aby przejść do <strong>edycji oferty</strong> lub <strong>zarządzania użytkownikami</strong>.</p>
+  </div>
 </div>

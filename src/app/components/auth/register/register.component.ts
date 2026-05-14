@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
 import {AuthService} from '../../../services/auth.service';
 import {FormsModule, NgForm} from '@angular/forms';
-import { NgIf } from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-register',
   imports: [
     FormsModule,
-    NgIf
+    NgIf,
+    NgClass,
+    RouterLink
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
@@ -26,9 +29,14 @@ export class RegisterComponent {
         this.message = "Rejestracja przebiegła pomyślnie.";
         console.log(res);
       },
-      error: (err) => {this.message = "Rejestracja nie udała się."
-        console.log(err);
-      },
+      error: (err) => {
+        if (err.error && typeof err.error === 'string' && err.error.toLowerCase().includes('exists')) {
+          this.message = "Użytkownik o takiej nazwie już istnieje.";
+        } else {
+          this.message = "Rejestracja nie udała się, możliwy błąd serwera.";
+        }
+        console.error(err);
+      }
     });
   }
 

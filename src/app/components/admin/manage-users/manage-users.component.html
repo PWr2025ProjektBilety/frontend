@@ -1,0 +1,134 @@
+<div class="container mt-4 mt-md-5 mb-5">
+
+  <div class="row mb-4 gy-3 align-items-center">
+    <div class="col-12 col-md-7 text-center text-md-start">
+      <h2 class="fw-bold text-dark mb-0">Zarządzanie Uprawnieniami</h2>
+      <p class="text-muted small text-uppercase fw-bold pt-2 mb-0" style="letter-spacing: 1px;">
+        <i class="bi bi-shield-lock-fill me-1 text-primary"></i> Panel Administracyjny
+      </p>
+    </div>
+
+    <div class="col-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-end gap-3">
+      <div class="text-center px-3 border-end">
+        <div class="display-6 fw-bold mb-0 text-primary">{{ totalUsersCount }}</div>
+        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Użytkowników</small>
+      </div>
+      <div class="text-center px-3">
+        <div class="display-6 fw-bold mb-0 text-danger">{{ adminsCount }}</div>
+        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Adminów</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+    <div class="bg-dark bg-gradient py-1"></div>
+
+    <div class="card-body p-0">
+      <div *ngIf="successMessage" class="alert alert-success border-0 rounded-0 m-0 py-3 text-center">
+        <i class="bi bi-check-circle-fill me-2"></i> {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger border-0 rounded-0 m-0 py-3 text-center">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+      </div>
+
+      <div class="d-none d-md-block">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+          <tr class="text-secondary small fw-bold text-uppercase">
+            <th class="ps-4 py-3" style="width: 100px">ID</th>
+            <th>Użytkownik</th>
+            <th>Aktualna Rola</th>
+            <th class="text-center">Zarządzanie Dostępem</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let user of users" class="transition-all">
+            <td class="ps-4"><span class="badge bg-white text-muted border px-2 py-1">#{{ user.id }}</span></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar-circle me-3 shadow-sm">{{ user.login[0].toUpperCase() }}</div>
+                <div class="fw-bold text-dark">
+                  {{ user.login }}
+                  <span *ngIf="user.login === currentAdminLogin" class="ms-2 badge rounded-pill bg-info-subtle text-info border border-info-subtle small fw-medium">
+                      <i class="bi bi-person-check-fill"></i> Twoje konto
+                    </span>
+                </div>
+              </div>
+            </td>
+            <td>
+                <span class="badge rounded-pill px-3 py-2 d-inline-flex align-items-center shadow-sm"
+                      [ngClass]="user.role === 'ADMIN' ? 'bg-danger-subtle text-danger border border-danger-subtle' :
+                                (user.role === 'INSPECTOR' ? 'bg-warning-subtle text-warning-emphasis border border-warning-subtle' : 'bg-primary-subtle text-primary border border-primary-subtle')">
+                  <i class="bi me-2" [ngClass]="user.role === 'ADMIN' ? 'bi-shield-lock-fill' : (user.role === 'INSPECTOR' ? 'bi-shield-shaded' : 'bi-person-fill')"></i>
+                  {{ user.role }}
+                </span>
+            </td>
+            <td class="pe-4 text-center">
+              <div *ngIf="user.login !== currentAdminLogin && user.role !== 'ADMIN'; else actionLocked" class="d-flex justify-content-center">
+                <div class="input-group input-group-sm" style="max-width: 220px;">
+                  <select #roleSelect class="form-select border-2 rounded-start-pill">
+                    <option value="USER" [selected]="user.role === 'USER'">Pasażer</option>
+                    <option value="INSPECTOR" [selected]="user.role === 'INSPECTOR'">Kontroler</option>
+                  </select>
+                  <button class="btn btn-dark rounded-end-pill px-3 fw-bold" (click)="onRoleChange(user.id, user.login, roleSelect.value)">ZAPISZ</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-md-none">
+        <div *ngFor="let user of users" class="p-4 border-bottom transition-all">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="d-flex align-items-center">
+              <div class="avatar-circle me-3 shadow-sm">{{ user.login[0].toUpperCase() }}</div>
+              <div>
+                <div class="fw-bold text-dark fs-5">
+                  {{ user.login }}
+                </div>
+                <div *ngIf="user.login === currentAdminLogin" class="badge rounded-pill bg-info-subtle text-info border border-info-subtle small mt-1">
+                  Twoje konto
+                </div>
+                <div class="text-muted small">ID: #{{ user.id }}</div>
+              </div>
+            </div>
+            <span class="badge rounded-pill px-3 py-2 d-inline-flex align-items-center shadow-sm"
+                  [ngClass]="user.role === 'ADMIN' ? 'bg-danger-subtle text-danger border border-danger-subtle' :
+                            (user.role === 'INSPECTOR' ? 'bg-warning-subtle text-warning-emphasis border border-warning-subtle' : 'bg-primary-subtle text-primary border border-primary-subtle')">
+              <i class="bi me-1" [ngClass]="user.role === 'ADMIN' ? 'bi-shield-lock-fill' : (user.role === 'INSPECTOR' ? 'bi-shield-shaded' : 'bi-person-fill')"></i>
+              {{ user.role }}
+            </span>
+          </div>
+
+          <div class="mt-3">
+            <div *ngIf="user.login !== currentAdminLogin && user.role !== 'ADMIN'; else actionLockedMobile">
+              <label class="small text-muted mb-2 fw-bold uppercase" style="font-size: 0.65rem;">Zmień uprawnienia użytkownika:</label>
+              <div class="input-group shadow-sm">
+                <select #roleSelectMob class="form-select border-2 rounded-start-pill">
+                  <option value="USER" [selected]="user.role === 'USER'">Pasażer</option>
+                  <option value="INSPECTOR" [selected]="user.role === 'INSPECTOR'">Kontroler</option>
+                </select>
+                <button class="btn btn-dark rounded-end-pill px-4 fw-bold" (click)="onRoleChange(user.id, user.login, roleSelectMob.value)">ZAPISZ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #actionLocked>
+  <span class="text-muted small bg-light px-3 py-1 rounded-pill border border-dashed">
+    <i class="bi bi-lock-fill"></i> Chroniony
+  </span>
+</ng-template>
+
+<ng-template #actionLockedMobile>
+  <div class="bg-light p-3 rounded-3 text-center text-muted small border border-dashed">
+    <i class="bi bi-lock-fill me-1"></i> Status chroniony (Admin lub Ty)
+  </div>
+</ng-template>

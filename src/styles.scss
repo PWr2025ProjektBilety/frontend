@@ -1,5 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
-@import 'bootstrap/scss/bootstrap';
+@use "bootstrap/scss/bootstrap" as bs;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Arial, sans-serif; }
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+}
+
+// 3. Globalne poprawki mobilne z użyciem mixinów Bootstrapa
+@media (max-width: 576px) {
+  h1 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .form-control {
+    font-size: 16px; // Ważne dla iOS (brak auto-zoomu)
+    padding: 0.75rem;
+  }
+
+}
+
+.auth-container {
+  width: 90%;
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+}

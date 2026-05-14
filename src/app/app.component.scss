@@ -1,27 +1,106 @@
-.transition-top {
-  transition: top 0.5s;
-}
+@use "bootstrap/scss/bootstrap" as bs;
 
-.nav-link:hover {
-  text-decoration: underline;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 0.25rem;
-}
-.active-link {
-  font-weight: bold;
+html, body {
+  height: 100%;
 }
 
 body {
-  min-width: 450px;
-  overflow-x: auto;
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  background-color: #f8f9fa;
+  overflow-x: hidden;
 }
 
 #main-header {
-  min-height: 80px;
+  min-height: 70px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1050;
+  transition: top 0.4s ease-in-out;
 }
 
-.main-content {
-  padding-top: 80px;
+@media (min-width: 992px) {
+  #main-header.hide-header {
+    top: -85px;
+  }
 }
 
+#main-header:has(.navbar-collapse.show) {
+  top: 0 !important;
+}
 
+.active-link {
+  font-weight: bold;
+  color: #fff !important;
+  @media (min-width: 992px) {
+    border-bottom: 2px solid white;
+  }
+}
+
+.nav-link {
+  transition: all 0.2s;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background-color: #0d6efd;
+    margin: 0;
+    padding: 0 1rem 1.5rem 1rem;
+    border: none;
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  .nav-item {
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .nav-link {
+    padding: 15px 0 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.points-container {
+  color: #ffc107;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+
+  @media (max-width: 991.98px) {
+    justify-content: center;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+main.container {
+  margin-top: 100px;
+  min-height: calc(100vh - 160px);
+}
+
+.auth-container {
+  width: 95%;
+  max-width: 450px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
